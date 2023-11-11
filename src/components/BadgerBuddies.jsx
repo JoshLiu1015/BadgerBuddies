@@ -1,14 +1,14 @@
-import { Alert, Text, View, Image, Button } from "react-native";
-import LoginScreen from "./LoginScreen";
-import { useEffect, useState } from "react";
+import { NavigationContainer } from '@react-navigation/native';
+
+import BadgerTabs from './navigation/BadgerTabs';
 
 
-export default function BadgerBuddies() {
+export default function BadgerBuddies(props) {
 
-    
 
-    return <View>
-        <LoginScreen/>
-
-    </View>
+return <>
+        <NavigationContainer>
+            <BadgerTabs/>            
+        </NavigationContainer>
+    </>
 }

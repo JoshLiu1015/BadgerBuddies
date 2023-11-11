@@ -1,31 +1,39 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
-const LoginScreen = ({ onLogin, onNavigateToSignUp }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = ({ onLogin, onNavigateToSignUp, navigation }) => {
+  const emailRef = useRef('');
+  const passwordRef = useRef('');
 
-  const handleLogin = () => {
-    onLogin(email, password);
+  function handleLogin() {
+    // Access the current value of the refs with `emailRef.current` and `passwordRef.current`
+    onLogin(emailRef.current, passwordRef.current);
   };
+
+  function onNavigateToSignUp() {
+    navigation.navigate('SignUp')
+    
+  }
 
   return (
     <View style={styles.container}>
       <Text style={{fontSize: 24, textAlign: "center", marginBottom: 30}}>Welcome to Badger Buddies!</Text>
       <TextInput
         style={styles.input}
-        value={email}
-        onChangeText={setEmail}
+        ref={emailRef} // Use ref instead of value and onChangeText
         placeholder="Email"
         keyboardType="email-address"
         autoCapitalize="none"
+        // // Assign the input value directly to the ref
+        // onChangeText={(text) => { emailRef.current = text; }}
       />
       <TextInput
         style={styles.input}
-        value={password}
-        onChangeText={setPassword}
+        ref={passwordRef} // Use ref instead of value and onChangeText
         placeholder="Password"
         secureTextEntry
+        // // Assign the input value directly to the ref
+        // onChangeText={(text) => { passwordRef.current = text; }}
       />
       <Button title="LOGIN" onPress={handleLogin} />
       <Text>Is it your first time?</Text>
