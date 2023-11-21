@@ -1,61 +1,70 @@
-import React, { useRef } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-const LoginScreen = ({ onLogin, onNavigateToSignUp, navigation }) => {
-  const emailRef = useRef('');
-  const passwordRef = useRef('');
+const LoginScreen = (props) => {
 
-  function handleLogin() {
-    // Access the current value of the refs with `emailRef.current` and `passwordRef.current`
-    onLogin(emailRef.current, passwordRef.current);
-  };
+  const [usernameVal, setUsernameVal] = useState("");
+    const [passwordVal, setPasswordVal] = useState("");
 
-  function onNavigateToSignUp() {
-    navigation.navigate('SignUp')
-    
-  }
 
-  return (
-    <View style={styles.container}>
-      <Text style={{fontSize: 24, textAlign: "center", marginBottom: 30}}>Welcome to Badger Buddies!</Text>
-      <TextInput
-        style={styles.input}
-        ref={emailRef} // Use ref instead of value and onChangeText
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        // // Assign the input value directly to the ref
-        // onChangeText={(text) => { emailRef.current = text; }}
-      />
-      <TextInput
-        style={styles.input}
-        ref={passwordRef} // Use ref instead of value and onChangeText
-        placeholder="Password"
-        secureTextEntry
-        // // Assign the input value directly to the ref
-        // onChangeText={(text) => { passwordRef.current = text; }}
-      />
-      <Button title="LOGIN" onPress={handleLogin} />
-      <Text>Is it your first time?</Text>
-      <Button title="Sign Up" onPress={onNavigateToSignUp} />
-    </View>
-  );
-};
+    return <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <Text style={{ fontSize: 36 }}>BadgerBuddies Login</Text>
+          <Text style={{ marginTop: 20 }}>Username</Text>
+          <TextInput
+              style={styles.input}
+              onChangeText={setUsernameVal}
+              value={usernameVal}
+          />
+          <Text>Password</Text>
+          <TextInput
+              style={styles.input}
+              onChangeText={setPasswordVal}
+              value={passwordVal}
+              secureTextEntry={true}
+          />
+          
+          <View style={{ borderWidth: 1, marginTop: 15 }}>
+            <Button color="crimson" title="LOGIN" onPress={() => {
+                // if (usernameVal === "" || passwordVal === "")
+                //     alert("You must provide both a username and password!");
+                // else{
+                    props.handleLogin(usernameVal, passwordVal)
+                    setUsernameVal("");
+                    setPasswordVal("");
+                // }
+
+            }} />
+          </View>
+          
+          <View style={{ flexDirection: "row", marginTop: 15 }}>
+            <View style={{ justifyContent: "center" }}>
+              <Text>Is it your first time?</Text>
+            </View>
+            <View style={{ borderWidth: 1, marginLeft: 15 }}> 
+              <Button color="grey" title="SIGNUP" onPress={() => props.setIsRegistering(true)} />
+            </View>
+          </View>
+        
+              
+      </View>
+    </TouchableWithoutFeedback>;
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  input: {
-    width: '100%',
-    marginVertical: 8,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    input: {
+        height: 40,
+        width: 200,
+        margin: 15,
+        borderWidth: 1,
+        padding: 10,
+    },
 });
 
 export default LoginScreen;

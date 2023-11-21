@@ -1,57 +1,86 @@
-import React, { useRef } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-const SignUpScreen = ({ onSignUp }) => {
-  const emailRef = useRef('');
-  const passwordRef = useRef('');
+const SignUpScreen = (props) => {
+  const [usernameVal, setUsernameVal] = useState("");
+  const [passwordVal, setPasswordVal] = useState("");
+  const [confirmPasswordVal, setConfirmPasswordVal] = useState("");
 
-  const handleSignUp = () => {
-    // Access the current value of the refs with `emailRef.current` and `passwordRef.current`
-    onSignUp(emailRef.current, passwordRef.current);
-  };
+  return <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+      <Text style={{ fontSize: 36 }}>Join BadgerBuddies!</Text>
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Sign Up</Text>
+      <Text style={{ marginTop: 20 }}>Username</Text>
       <TextInput
-        style={styles.input}
-        ref={emailRef} // Assign ref for email
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        onChangeText={(text) => { emailRef.current = text; }} // Update ref value on change
+          style={styles.input}
+          onChangeText={setUsernameVal}
+          value={usernameVal}
       />
+      <Text>Password</Text>
       <TextInput
-        style={styles.input}
-        ref={passwordRef} // Assign ref for password
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(text) => { passwordRef.current = text; }} // Update ref value on change
+          style={styles.input}
+          onChangeText={setPasswordVal}
+          value={passwordVal}
+          secureTextEntry={true}
       />
-      <Button title="CREATE ACCOUNT" onPress={handleSignUp} />
+      <Text>Confirm Password</Text>
+      <TextInput
+          style={styles.input}
+          onChangeText={setConfirmPasswordVal}
+          value={confirmPasswordVal}
+          secureTextEntry={true}
+      />
+
+      
+      <View style={{ borderWidth: 1, marginTop: 15 }}>
+          <Button color="crimson" title="SIGNUP" onPress={() => {
+              if (usernameVal === "")
+                  alert("Please enter a username");
+              else if (passwordVal === "")
+                  alert("Please enter a password");
+              else if (confirmPasswordVal === "")
+                  alert("Please enter a confirm password")
+              else if (passwordVal !== confirmPasswordVal)
+                  alert("Passwords do not match")
+              else{
+                  // props.setIsRegistering(false);
+                  props.handleSignup(usernameVal, passwordVal);
+                  setUsernameVal("");
+                  setPasswordVal("");
+                  setConfirmPasswordVal("");
+
+              }
+
+          }} />
+      </View>
+
+      <View style={{ flexDirection: "row", marginTop: 15 }}>
+        <View style={{ justifyContent: "center" }}>
+          <Text>already have an account?</Text>
+        </View>
+        <View style={{ borderWidth: 1, marginLeft: 15}}>
+            <Button color="grey" title="LOGIN" onPress={() => props.setIsRegistering(false)} />
+        </View>
+      </View>
+        
     </View>
-  );
-};
+  </TouchableWithoutFeedback>;;
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    textAlign: "center",
-    marginBottom: 30
-  },
-  input: {
-    width: '100%',
-    marginVertical: 8,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    input: {
+        height: 40,
+        width: 200,
+        margin: 15,
+        borderWidth: 1,
+        padding: 10,
+      },
 });
 
 export default SignUpScreen;
