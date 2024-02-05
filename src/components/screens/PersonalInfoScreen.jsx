@@ -8,7 +8,9 @@ export default function PersonalInfoScreen(props) {
 
     const navigation = useNavigation();
 
-
+    function goToBadgerTabs() {
+        props.onScreenChange('BadgerTabs');
+    };
 
     return <View style={{flex: 1}}>
         {/* <Text style={styles.header}>Create Account</Text> */}
@@ -29,8 +31,12 @@ export default function PersonalInfoScreen(props) {
                 <TextInput placeholder="Grade" style={styles.input} />
                 <TextInput placeholder="Weight" style={styles.input} />
                 <TextInput placeholder="Height" style={styles.input} />
-                <Button title="NEXT" onPress={() => navigation.push("Match Information", props)} />
+                
             </View>
+            <View style={{borderWidth: 1, margin: 15, marginHorizontal: 115}}>
+                <Button title="Create Account" onPress={goToBadgerTabs} />
+            </View>
+            
         </ScrollView>
 
         

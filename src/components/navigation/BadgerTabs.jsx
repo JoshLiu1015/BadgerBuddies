@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import InfoStack from "./InfoStack";
 import { useState } from 'react';
+import MatchInfoScreen from '../screens/MatchInfoScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 
 
@@ -15,10 +17,10 @@ function BadgerTabs() {
     const BottomTab = createBottomTabNavigator();
     const [isFirstTime, setIsFirstTime] = useState(true);
 
-    return isFirstTime ? <InfoStack/>
-    : <>
+    return <>
         <BottomTab.Navigator>
-            <BottomTab.Screen name="Profile" component={ProfileStack} options={{headerShown: false}}/>
+            <BottomTab.Screen name="Profile" component={ProfileScreen} options={{headerShown: false}}/>
+            <BottomTab.Screen name="Match" component={MatchInfoScreen} options={{headerShown: false}}/>
             {/* <BottomTab.Screen name="Preferences" component={BadgerPreferencesScreen}/> */}
         </BottomTab.Navigator>
     </>
