@@ -150,6 +150,10 @@ class User {
         */
         return db.execute(sql, [email]);
     }
+
+    static delete(id) {
+        
+    }
 }
 
 module.exports = User;
