@@ -5,9 +5,9 @@ app.use(express.json());
 
 app.use("/user", require("./routes/userRoutes"));
 
-app.get("/", (req, res) => {
-    res.status(200).send("heeellllooooo");
-})
+// app.get("/", (req, res) => {
+//     res.status(200).send("heeellllooooo");
+// })
 
 
 
