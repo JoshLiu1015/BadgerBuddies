@@ -1,4 +1,7 @@
+// It loads environment variables from the .env file into the process.env object. 
+// This makes environment variables easily accessible throughout the app
 require("dotenv").config()
+
 const mysql = require("mysql2")
 
 /*

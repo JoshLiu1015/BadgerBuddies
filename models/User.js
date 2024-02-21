@@ -1,6 +1,5 @@
 const db = require("../config/db");
 const bcrypt = require('bcrypt');
-const { param } = require("../routes/userRoutes");
 const saltRounds = 10;
 
 class User {
@@ -32,7 +31,7 @@ class User {
         // 0 means false, 1 means true
         this.isDeleted = 0;
         this.isEmailVerified = 0;
-        this.verificationToken = this.generateVerificationToken();
+        this.emailVerificationToken = this.generateVerificationToken();
 
 
     }}
@@ -69,7 +68,7 @@ class User {
             picture,
             isDeleted,
             isEmailVerified,
-            verificationToken,
+            emailVerificationToken,
             createTime
         )
         VALUES(
@@ -85,7 +84,7 @@ class User {
             '${this.picture}',
             '${this.isDeleted}',
             '${this.isEmailVerified}',
-            '${this.verificationToken}',
+            '${this.emailVerificationToken}',
             '${createTime}'
         )
         `;
@@ -108,9 +107,15 @@ class User {
             let value = updateData[key];
 
             // Special handling for password to hash it
-            if (key === 'password' && value) {
+            if (key === "password" && value) {
                 // the execution in this async function is paused at each await
                 value = await bcrypt.hash(value, saltRounds);
+            }
+            
+            // 
+            if (key === "emailVerificationToken") {
+                updates.push(`${key} = ?`);
+                params.push(value);
             }
 
             // Skip undefined or null values
@@ -125,6 +130,12 @@ class User {
 
         // Construct the SQL statement
         let sql = `UPDATE Users SET ${updates.join(', ')} WHERE id = ?`;
+
+        // Add lines to debug
+        console.log("key: ", updates);
+        console.log("params: ", params); 
+        
+
 
         // Execute the SQL statement with parameters
         return db.execute(sql, params);

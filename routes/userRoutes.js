@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userControllers = require("../controllers/userControllers");
+const authControllers = require("../controllers/authControllers");
 
 
 router
@@ -17,9 +18,9 @@ to be provided in the request.
 */
 router
     .route("/id/:id")
-    .get(userControllers.authenticateToken, userControllers.getUserById)
+    .get(authControllers.authenticateToken, userControllers.getUserById)
     // update user info
-    .patch(userControllers.authenticateToken, userControllers.updateUser)
+    .patch(authControllers.authenticateToken, userControllers.updateUser)
     .delete(userControllers.deleteUser);
 
 router
@@ -30,4 +31,9 @@ router
 router
     .route("/login")
     .post((userControllers.loginUser))
+
+router
+    .route("/verify-email")
+    .get(authControllers.verifyEmail)
+
 module.exports = router;

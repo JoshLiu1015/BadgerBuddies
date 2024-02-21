@@ -2,32 +2,8 @@ const User = require("../models/User");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const { sendVerificationEmail } = require("./authControllers");
 
-// a function called in createNewUser() it should be an async function because 
-// it should return a promise for the awiat in createNewUser() to be effective.
-// even tho sendVerificationEmail doesn't explicitly return a promise, 
-// it still return a Promise<undefined> due to the async keyword
-const sendVerificationEmail = async (userEmail, verificationToken) => {
-    let transporter = nodemailer.createTransport({
-        // Configure transport options
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    });
-
-    let verifyUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
-
-    let mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: userEmail,
-        subject: "Verify your email",
-        html: 'Please click this link to verify your email address: <a href="http://localhost:3000/verify-email?token=${verificationToken}">Verify Email</a>'
-    };
-
-    await transporter.sendMail(mailOptions);
-}
 
 
 const createNewUser = async (req, res, next) => {
@@ -39,11 +15,11 @@ const createNewUser = async (req, res, next) => {
         let user = new User(email, password, firstName,
             lastName, gender, major, grade, weight, height,
             picture)
-
+        
         let [info, _] = await user.save();
         
         // wait for the user to verify email before sending back status
-        await sendVerificationEmail(user.email, user.verificationToken);
+        await sendVerificationEmail(user.email, user.emailVerificationToken);
         
         res.status(201).json({Info: info});
 
@@ -124,7 +100,6 @@ const deleteUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        console.log("email: ", email, password);
         // user is an object in an array that is nested in another array
         let [[user], _] = await User.findByEmail(email);
 
@@ -157,42 +132,6 @@ const loginUser = async (req, res, next) => {
 
 
 
-// the function is used to 
-const authenticateToken = (req, res, next) => {
-    // the header is Authorization: Bearer token,
-    // so split(" ") gets ["Bearer", "token"]
-
-    /*
-    the use of ?: If req.headers.authorization is undefined 
-    (meaning the Authorization header is not present), 
-    the optional chaining operator short-circuits 
-    the operation, resulting in undefined 
-    instead of throwing an error.
-    */
-    const token = req.headers.authorization?.split(" ")[1]
-    if (!token) {
-        // If no token is found, return an Unauthorized status
-        return res.sendStatus(401);
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-        if (err) {
-            // If the token is invalid or expired, return a Forbidden status
-            return res.sendStatus(403);
-
-        }
-        /*
-        // After extracting the payload from the JWT,
-        // It allows subsequent middleware and route handlers 
-        // to access the authenticated user's information without 
-        // needing to re-verify the token or re-fetch the user's details from the database.
-        req.user = payload;
-        */
-
-        // Proceed to the next middleware or route handler
-        next();
-    })
-}
 
 
 module.exports = {
@@ -201,5 +140,5 @@ module.exports = {
     getUserById,
     getUserByEmail,
     deleteUser,
-    loginUser,
-    authenticateToken};
+    loginUser
+};
