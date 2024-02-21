@@ -19,11 +19,12 @@ router
     .route("/id/:id")
     .get(userControllers.authenticateToken, userControllers.getUserById)
     // update user info
-    .patch(userControllers.authenticateToken, userControllers.updateUser);
+    .patch(userControllers.authenticateToken, userControllers.updateUser)
+    .delete(userControllers.deleteUser);
 
 router
     .route("/email/:email")
-    .get(userControllers.authenticateToken, userControllers.getUserByEmail);
+    .get(userControllers.getUserByEmail);
 
 
 router

@@ -4,7 +4,7 @@ const { param } = require("../routes/userRoutes");
 const saltRounds = 10;
 
 class User {
-    constructor(email, password, firstName, lastName, gender, major, grade, weight, height, picture, isDeleted) {{
+    constructor(email, password, firstName, lastName, gender, major, grade, weight, height, picture) {{
         this.email = email;
 
         // Do not store the password directly.
@@ -29,13 +29,22 @@ class User {
         */
         this.picture = picture;
 
-        this.isDeleted = isDeleted;
+        // 0 means false, 1 means true
+        this.isDeleted = 0;
+        this.isEmailVerified = 0;
+        this.verificationToken = this.generateVerificationToken();
 
 
     }}
 
     async setPassword(password) {
         this.passwordHash = await bcrypt.hash(password, saltRounds);
+    }
+
+    // generate a token that will be sent via an email to a user
+    generateVerificationToken() {
+        const { randomBytes } = require("crypto");
+        return randomBytes(20).toString("hex");
     }
     
     save() {
@@ -59,6 +68,8 @@ class User {
             height,
             picture,
             isDeleted,
+            isEmailVerified,
+            verificationToken,
             createTime
         )
         VALUES(
@@ -73,6 +84,8 @@ class User {
             '${this.height}',
             '${this.picture}',
             '${this.isDeleted}',
+            '${this.isEmailVerified}',
+            '${this.verificationToken}',
             '${createTime}'
         )
         `;
@@ -83,11 +96,6 @@ class User {
     }
 
     static async update(id, updateData) {
-        const { email, password, firstName, lastName, gender, major, grade, weight, height, picture, isDeleted } = updateData;
-        
-        // let updateDataArray = updateData.keys();
-
-
         // array used for the sql query
         let updates = [];
 
@@ -152,7 +160,9 @@ class User {
     }
 
     static delete(id) {
-        
+        let sql = `DELETE FROM Users WHERE id = ?`;
+
+        return db.execute(sql, [id]);
     }
 }
 

@@ -1,18 +1,49 @@
 const User = require("../models/User");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
+
+// a function called in createNewUser() it should be an async function because 
+// it should return a promise for the awiat in createNewUser() to be effective.
+// even tho sendVerificationEmail doesn't explicitly return a promise, 
+// it still return a Promise<undefined> due to the async keyword
+const sendVerificationEmail = async (userEmail, verificationToken) => {
+    let transporter = nodemailer.createTransport({
+        // Configure transport options
+        service: "gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+        },
+    });
+
+    let verifyUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
+
+    let mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: userEmail,
+        subject: "Verify your email",
+        html: 'Please click this link to verify your email address: <a href="http://localhost:3000/verify-email?token=${verificationToken}">Verify Email</a>'
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
 
 const createNewUser = async (req, res, next) => {
     try {
         let {email, password, firstName, lastName,
             gender, major, grade, weight, height,
-            picture, isDeleted} = req.body;
+            picture} = req.body;
         
         let user = new User(email, password, firstName,
             lastName, gender, major, grade, weight, height,
-            picture, isDeleted,)
+            picture)
 
-        info = await user.save();
+        let [info, _] = await user.save();
+        
+        // wait for the user to verify email before sending back status
+        await sendVerificationEmail(user.email, user.verificationToken);
         
         res.status(201).json({Info: info});
 
@@ -41,9 +72,9 @@ const updateUser = async (req, res, next) => {
     try {
         let userId = req.params.id;
         let updateData = req.body;
-        let [user, _] = await User.update(userId, updateData);
+        let [info, _] = await User.update(userId, updateData);
 
-        res.status(200).json({User: user});
+        res.status(200).json({Info: info});
     } catch(error) {
         next(error);
     }
@@ -72,10 +103,28 @@ const getUserByEmail = async (req, res, next) => {
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        let userId = req.params.id;
+
+        let [info, _] = await User.delete(userId);
+
+        if (info.affectedRows === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({ Info: info });
+    } catch(error) {
+        next(error);
+    }
+    
+}
+
 
 const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        console.log("email: ", email, password);
         // user is an object in an array that is nested in another array
         let [[user], _] = await User.findByEmail(email);
 
@@ -107,6 +156,8 @@ const loginUser = async (req, res, next) => {
 }
 
 
+
+// the function is used to 
 const authenticateToken = (req, res, next) => {
     // the header is Authorization: Bearer token,
     // so split(" ") gets ["Bearer", "token"]
@@ -149,5 +200,6 @@ module.exports = {
     updateUser,
     getUserById,
     getUserByEmail,
+    deleteUser,
     loginUser,
     authenticateToken};
