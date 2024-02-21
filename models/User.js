@@ -4,13 +4,18 @@ const saltRounds = 10;
 
 class User {
     constructor(email, password, firstName, lastName, gender, major, grade, weight, height, picture) {{
+
+        console.log("User password: ", password);
         this.email = email;
 
         // Do not store the password directly.
         // passwordHash will be set after hashing
         this.passwordHash = ""
 
-        this.setPassword(password);
+        // this.setPassword(password);
+
+
+        // console.log("User passwordHash: ", this.passwordHash);
 
         this.firstName = firstName;
         this.lastName = lastName;

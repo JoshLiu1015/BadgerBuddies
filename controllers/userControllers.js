@@ -15,6 +15,9 @@ const createNewUser = async (req, res, next) => {
         let user = new User(email, password, firstName,
             lastName, gender, major, grade, weight, height,
             picture)
+        console.log("userControlllers password: ", password);
+
+        await user.setPassword(password);
         
         let [info, _] = await user.save();
         
