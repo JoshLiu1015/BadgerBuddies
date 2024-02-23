@@ -1,18 +1,17 @@
 const User = require("../models/User");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 const { sendVerificationEmail } = require("./authControllers");
 
 
 
 const createNewUser = async (req, res, next) => {
     try {
-        let {email, password, firstName, lastName,
+        const {email, password, firstName, lastName,
             gender, major, grade, weight, height,
             picture} = req.body;
         
-        let user = new User(email, password, firstName,
+        const user = new User(email, password, firstName,
             lastName, gender, major, grade, weight, height,
             picture)
         console.log("userControlllers password: ", password);
@@ -49,9 +48,9 @@ const createNewUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
     try {
-        let userId = req.params.id;
-        let updateData = req.body;
-        let [info, _] = await User.update(userId, updateData);
+        const userId = req.params.id;
+        const updateData = req.body;
+        const [info, _] = await User.update(userId, updateData);
 
         res.status(200).json({Info: info});
     } catch(error) {
@@ -61,9 +60,9 @@ const updateUser = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
     try{
-        let userId = req.params.id;
+        const userId = req.params.id;
         // user is an object in an array that is nested in another array
-        let [[user], _] = await User.findById(userId);
+        const [[user], _] = await User.findById(userId);
 
         res.status(200).json({User: user});
     } catch(error) {
@@ -73,8 +72,8 @@ const getUserById = async (req, res, next) => {
 
 const getUserByEmail = async (req, res, next) => {
     try {
-        let userEmail = req.params.email;
-        let [[user], _] = await User.findByEmail(userEmail);
+        const userEmail = req.params.email;
+        const [[user], _] = await User.findByEmail(userEmail);
 
         res.status(200).json({User: user});
     } catch(error) {
@@ -84,9 +83,9 @@ const getUserByEmail = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
     try {
-        let userId = req.params.id;
+        const userId = req.params.id;
 
-        let [info, _] = await User.delete(userId);
+        const [info, _] = await User.delete(userId);
 
         if (info.affectedRows === 0) {
             return res.status(404).json({ message: "User not found" });
@@ -104,7 +103,7 @@ const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         // user is an object in an array that is nested in another array
-        let [[user], _] = await User.findByEmail(email);
+        const [[user], _] = await User.findByEmail(email);
 
         // if the user is found
         if (user) {

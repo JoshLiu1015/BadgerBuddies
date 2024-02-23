@@ -9,6 +9,8 @@ app.use("/user", require("./routes/userRoutes"));
 //     res.status(200).send("heeellllooooo");
 // })
 
+app.use("/preference", require("./routes/preferenceRoutes"));
+
 
 
 app.listen(3000, () => {

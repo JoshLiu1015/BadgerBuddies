@@ -21,10 +21,14 @@ router
     .get(authControllers.authenticateToken, userControllers.getUserById)
     // update user info
     .patch(authControllers.authenticateToken, userControllers.updateUser)
+    // not adding authenticateToken function only because it is easier for testing when developing
+    // the function should be added eventually
     .delete(userControllers.deleteUser);
 
 router
     .route("/email/:email")
+    // not adding authenticateToken function because the verifyEmail function
+    // is used when registering, which is before getting a JWT
     .get(userControllers.getUserByEmail);
 
 
