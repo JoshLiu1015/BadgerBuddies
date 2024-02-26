@@ -11,6 +11,7 @@ app.use("/user", require("./routes/userRoutes"));
 
 app.use("/preference", require("./routes/preferenceRoutes"));
 
+app.use("/match", require("./routes/matchRoutes"));
 
 
 app.listen(3000, () => {
