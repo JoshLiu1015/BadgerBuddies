@@ -1,15 +1,23 @@
 const db = require("../config/db");
 
 class Preference {
-    constructor(userId, sport, time, location, userLevel, partnerLevel, partnerGender) {
+    constructor(userId, exercise, time, location, userLevel, partnerLevel, userGender, partnerGender, exerciseDetails) {
         this.userId = userId;
-        this.sport = sport;
+        this.exercise = exercise;
         this.time = time;
         this.location = location;
         this.userLevel = userLevel;
         this.partnerLevel = partnerLevel;
+        // store user's gender again in a different table in database
+        // otherwise we need to query the user table just to get
+        // user's gender for the matching algorithm
+        // but users doesn't need to choose their again
+        // the frontend will record user's gender when they register
+        this.userGender = userGender;
         this.partnerGender = partnerGender;
-        this.sportDetails = sportDetails;
+        this.exerciseDetails = exerciseDetails;
+
+        this.isActive = 0;
     }
 
 
@@ -17,23 +25,27 @@ class Preference {
         let sql = `
         INSERT INTO Preference(
             userId,
-            sport,
+            exercise,
             time,
             location,
             userLevel,
             partnerLevel,
+            userGender,
             partnerGender,
-            sportDetails
+            exerciseDetails,
+            isActive
         )
         VALUE(
             '${this.userId}',
-            '${this.sport}',
+            '${this.exercise}',
             '${this.time}',
             '${this.location}',
             '${this.userLevel}',
             '${this.partnerLevel}',
+            '${this.userGender}',
             '${this.partnerGender}',
-            '${this.sportDetails}'
+            '${this.exerciseDetails}',
+            '${this.isActive}'
         )`
 
         // return a promise
@@ -75,7 +87,13 @@ class Preference {
         return db.execute(sql, params);
     }
 
-    static findById(id) {
+    static findByPreferenceId(id) {
+        let sql = `SELECT * FROM Preference WHERE id = ?`;
+
+        return db.execute(sql, [id]);
+    }
+
+    static findByUserId(id) {
         let sql = `SELECT * FROM Preference WHERE id = ?`;
 
         return db.execute(sql, [id]);
@@ -85,6 +103,25 @@ class Preference {
         let sql = `DELETE FROM Preference WHERE id = ?`;
 
         return db.execute(sql, [id]);
+    }
+
+
+    // return all user preferences that matches the exercise
+    static findPotentialMatches(exercise, userIdsMatched) {
+        // Check if there are any userIds to exclude to prevent SQL syntax error with empty NOT IN ()
+        if (userIdsMatched.length > 0) {
+            // Create a string of placeholders for each userId to be excluded
+            const placeholders = userIdsMatched.map(() => '?').join(',');
+            // Construct the SQL query string with placeholders for dynamic parameters
+            let sql = `SELECT * FROM Preference WHERE exercise = ? AND userId NOT IN (${placeholders})`;
+            
+            // The JavaScript spread operator (...) allows us to quickly copy all or part of an existing array or object into another array or object.
+            return db.execute(sql, [exercise, ...userIdsMatched]);
+        } else {
+            // If there are no userIds to exclude, execute a simpler query
+            let sql = `SELECT * FROM Preference WHERE exercise = ?`;
+            return db.execute(sql, [exercise]);
+        }
     }
 }
 

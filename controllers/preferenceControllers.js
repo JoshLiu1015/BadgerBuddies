@@ -3,9 +3,9 @@ const Preference = require("../models/Preference");
 const createPreference = async (req, res, next) => {
     try {
         // get the request body
-        const { userId, sport, time, location, userLevel, partnerLevel, partnerGender } = req.body;
+        const { userId, exercise, time, location, userLevel, partnerLevel, userGender, partnerGender, exerciseDetails } = req.body;
         // create a new Preference instance based on the values in the request body
-        const preference = new Preference(userId, sport, time, location, userLevel, partnerLevel, partnerGender);
+        const preference = new Preference(userId, exercise, time, location, userLevel, partnerLevel, userGender, partnerGender, exerciseDetails);
         // save the new instance into database
         let [info, _] = await preference.save();
         // return status
@@ -28,11 +28,11 @@ const updatePreference = async (req, res, next) => {
     }
 }
 
-const getPreferenceById = async (req, res, next) => {
+const getPreferenceByPreferenceId = async (req, res, next) => {
     try{
         const preferenceId = req.params.id;
         // preference is an object in an array that is nested in another array
-        const [[preference], _] = await Preference.findById(preferenceId);
+        const [[preference], _] = await Preference.findByPreferenceId(preferenceId);
 
         res.status(200).json({Preference: preference});
     } catch(error) {
@@ -40,6 +40,17 @@ const getPreferenceById = async (req, res, next) => {
     }
 }
 
+const getPreferenceByUserId = async (req, res, next) => {
+    try{
+        const userId = req.params.id;
+        // preference is an object in an array that is nested in another array
+        const [[preference], _] = await Preference.findByUserId(userId);
+
+        res.status(200).json({Preference: preference});
+    } catch(error) {
+        next(error);
+    }
+}
 
 
 const deletePreference = async (req, res, next) => {
@@ -64,6 +75,7 @@ const deletePreference = async (req, res, next) => {
 module.exports = {
     createPreference,
     updatePreference,
-    getPreferenceById,
+    getPreferenceByPreferenceId,
+    getPreferenceByUserId,
     deletePreference
 }
