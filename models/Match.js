@@ -2,11 +2,14 @@ const db = require("../config/db");
 
 
 class Match {
-    constructor(requesterId, targetId, isMatchAccepted, isMatchDeclined) {
+    constructor(requesterId, targetId) {
         this.requesterId = requesterId;
         this.targetId = targetId;
-        this.isMatchAccepted = isMatchAccepted;
-        this.isMatchDeclined = isMatchDeclined;
+        this.isMatchAccepted = 0;
+        this.isMatchDeclined = 0;
+
+        // isMatchCreated will be set to 0 after a period of time
+        this.isMatchCreated = 1;
     }
 
 
@@ -26,6 +29,7 @@ class Match {
             targetId, 
             isMatchAccepted, 
             isMatchDeclined,
+            isMatchCreated,
             createTime
         )
         VALUE(
@@ -33,6 +37,7 @@ class Match {
             '${this.targetId}',
             '${this.isMatchAccepted}',
             '${this.isMatchDeclined}',
+            '${this.isMatchCreated}',
             '${createTime}'
         )`
 
@@ -93,6 +98,12 @@ class Match {
 
         return db.execute(sql, [id]);
     }
+
+    // static findByIsMatch() {
+    //     let sql = `SELECT * FROM Match WHERE isMatchAccepted == 1 OR isMatchDeclined == 1`;
+
+    //     return db.execute(sql);
+    // }
 
     static delete(id) {
         let sql = `DELETE FROM Match WHERE id = ?`;

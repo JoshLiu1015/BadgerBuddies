@@ -35,38 +35,43 @@ const sendVerificationEmail = async (userEmail, emailVerificationToken) => {
 
 
 const verifyEmail = async (req, res) => {
-    // get the token and email from the request url
-    const { token, email } = req.query;
+    try {
+        // get the token and email from the request url
+        const { token, email } = req.query;
 
-    // find the user based on the email
-    const [[user], _] = await User.findByEmail(email);
+        // find the user based on the email
+        const [[user], _] = await User.findByEmail(email);
 
-    console.log("user: ", user);
-    // if the user isn't found based on the email
-    if (!user) {
-        res.status(400).send("Can't find the user. Please make sure it is the same email address as you registered!");
+        console.log("user: ", user);
+        // if the user isn't found based on the email
+        if (!user) {
+            res.status(400).send("Can't find the user. Please make sure it is the same email address as you registered!");
+        }
+
+        // user.isEmailVerified = true;
+        /*
+        Setting emailVerificationToken to undefined
+        After the user has successfully verified their email, the emailVerificationToken has served its purpose. 
+        Changing its value to undefined (or removing it) is a security measure
+
+        Data Cleanliness: It helps in keeping your database clean from unnecessary data. 
+        Once the token is used, storing it is no longer necessary.
+        */
+        // user.emailVerificationToken = "";
+
+        updateData = {
+            "isEmailVerified": true,
+            "emailVerificationToken": null
+        }
+        // update the info
+        await User.update(user.id, updateData);
+
+        // without specifying a status code, Express defaults to sending a 200 OK status
+        res.send("Email verified successfully");
+    } catch(error) {
+        next(error);
     }
-
-    // user.isEmailVerified = true;
-    /*
-    Setting emailVerificationToken to undefined
-    After the user has successfully verified their email, the emailVerificationToken has served its purpose. 
-    Changing its value to undefined (or removing it) is a security measure
-
-    Data Cleanliness: It helps in keeping your database clean from unnecessary data. 
-    Once the token is used, storing it is no longer necessary.
-    */
-    // user.emailVerificationToken = "";
-
-    updateData = {
-        "isEmailVerified": true,
-        "emailVerificationToken": null
-    }
-    // update the info
-    await User.update(user.id, updateData);
-
-    // without specifying a status code, Express defaults to sending a 200 OK status
-    res.send("Email verified successfully");
+    
 
 }
 

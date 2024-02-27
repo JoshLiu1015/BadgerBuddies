@@ -1,15 +1,26 @@
 const Match = require("../models/Match");
+const matchAlgorithm = require("../services/matchAlgorithm")
 
 const createMatch = async (req, res, next) => {
     try {
+        const requesterId = req.params.id;
+        // call findMatches from algorithmControllers to get matches, use a for loop to create them
+        targetPreferences = await matchAlgorithm.findMatches(requesterId);
+
         // get the request body
-        const { requesterId, targetId, isMatchAccepted, isMatchDeclined } = req.body;
-        // create a new Preference instance based on the values in the request body
-        const match = new Match(requesterId, targetId, isMatchAccepted, isMatchDeclined);
-        // save the new instance into database
-        let [info, _] = await match.save();
-        // return status
-        res.status(201).json({Info: info});
+        // const { requesterId, targetId } = req.body;
+
+        for (const preference of targetPreferences) {
+            // Create a new Match instance based on the values in the request body
+            const match = new Match(requesterId, preference.userId);
+            // Save the new instance into database
+            let [info, _] = await match.save();
+            
+            // return status
+            res.status(201).json({message: "Matche created successfully", Info: info});
+        }
+        
+        
     } catch(error) {
         next(error);
     }
@@ -67,6 +78,19 @@ const getMatchByTargetId = async (req, res, next) => {
     }
 }
 
+
+// return all the matches that have been confirmed
+const getMatchesByIsMatch = async (req, res, next) => {
+    try {
+        const [[matches], _] = await Match.findByIsMatch();
+
+        res.status(200).json({Matches: matches});
+
+    } catch(error) {
+        next(error);
+    }
+}
+
 const deleteMatch = async (req, res, next) => {
     try {
         const matchId = req.params.id;
@@ -92,5 +116,6 @@ module.exports = {
     getMatchByMatchId,
     getMatchByRequesterId,
     getMatchByTargetId,
+    getMatchesByIsMatch,
     deleteMatch
 }

@@ -107,21 +107,38 @@ class Preference {
 
 
     // return all user preferences that matches the exercise
-    static findPotentialMatches(exercise, userIdsMatched) {
-        // Check if there are any userIds to exclude to prevent SQL syntax error with empty NOT IN ()
-        if (userIdsMatched.length > 0) {
-            // Create a string of placeholders for each userId to be excluded
-            const placeholders = userIdsMatched.map(() => '?').join(',');
-            // Construct the SQL query string with placeholders for dynamic parameters
-            let sql = `SELECT * FROM Preference WHERE exercise = ? AND userId NOT IN (${placeholders})`;
-            
-            // The JavaScript spread operator (...) allows us to quickly copy all or part of an existing array or object into another array or object.
-            return db.execute(sql, [exercise, ...userIdsMatched]);
-        } else {
-            // If there are no userIds to exclude, execute a simpler query
-            let sql = `SELECT * FROM Preference WHERE exercise = ?`;
-            return db.execute(sql, [exercise]);
-        }
+    static findPotentialMatches(userId, exercise) {
+        // Construct the SQL query to join with the match table and filter based on match acceptance or declination
+
+        /*
+        The SELECT 1 is used in subqueries where the actual data selected isn't important. 
+        It's a common pattern used in EXISTS and NOT EXISTS subqueries. 
+        The database checks for the existence of rows that meet the subquery's conditions 
+        rather than retrieving particular values from those rows. If the subquery finds 
+        at least one row that meets the conditions, EXISTS returns true, and NOT EXISTS returns false.
+        */
+
+        let sql = `
+        SELECT p.* 
+        FROM Preference p
+        WHERE p.exercise = ? 
+        AND p.userId != ?
+        AND NOT EXISTS (
+            SELECT 1 
+            FROM Match m 
+            WHERE m.targetId = p.userId 
+            AND m.requesterId = ? 
+            AND (m.isMatchAccepted = 1 OR m.isMatchDeclined = 1 OR m.isMatchCreated = 1)`;
+
+        /*
+        Selects all preferences (p.*) that match a given exercise.
+        Ensures that the userId of the preference is not the same as the userId passed to the function, to avoid self-matching.
+        Uses a NOT EXISTS subquery to exclude preferences where there exists a match attempt by the userId (m.requesterId = ?) 
+        that has been either accepted (m.isMatchAccepted = 1) or declined (m.isMatchDeclined = 1).
+        */
+
+        // Execute the query with the exercise parameter
+        return db.execute(sql, [exercise, userId, userId]);
     }
 }
 
