@@ -23,7 +23,7 @@ class Preference {
 
     save() {
         let sql = `
-        INSERT INTO Preference(
+        INSERT INTO Preferences (
             userId,
             exercise,
             time,
@@ -75,7 +75,7 @@ class Preference {
         params.push(id);
 
         // Construct the SQL statement
-        let sql = `UPDATE Preference SET ${updates.join(', ')} WHERE id = ?`;
+        let sql = `UPDATE Preferences SET ${updates.join(', ')} WHERE id = ?`;
 
         // Add lines to debug
         console.log("key: ", updates);
@@ -88,19 +88,19 @@ class Preference {
     }
 
     static findByPreferenceId(id) {
-        let sql = `SELECT * FROM Preference WHERE id = ?`;
+        let sql = `SELECT * FROM Preferences WHERE id = ?`;
 
         return db.execute(sql, [id]);
     }
 
     static findByUserId(id) {
-        let sql = `SELECT * FROM Preference WHERE id = ?`;
+        let sql = `SELECT * FROM Preferences WHERE userId = ?`;
 
         return db.execute(sql, [id]);
     }
 
     static delete(id) {
-        let sql = `DELETE FROM Preference WHERE id = ?`;
+        let sql = `DELETE FROM Preferences WHERE id = ?`;
 
         return db.execute(sql, [id]);
     }
@@ -120,15 +120,15 @@ class Preference {
 
         let sql = `
         SELECT p.* 
-        FROM Preference p
-        WHERE p.exercise = ? 
-        AND p.userId != ?
+        FROM Preferences p
+        WHERE p.userId != ?
         AND NOT EXISTS (
             SELECT 1 
-            FROM Match m 
+            FROM Matches m 
             WHERE m.targetId = p.userId 
             AND m.requesterId = ? 
-            AND (m.isMatchAccepted = 1 OR m.isMatchDeclined = 1 OR m.isMatchCreated = 1)`;
+            AND (m.isMatchAccepted = 1 OR m.isMatchDeclined = 1 OR m.isMatchCreated = 1)
+        )`;
 
         /*
         Selects all preferences (p.*) that match a given exercise.
@@ -138,7 +138,7 @@ class Preference {
         */
 
         // Execute the query with the exercise parameter
-        return db.execute(sql, [exercise, userId, userId]);
+        return db.execute(sql, [userId, userId]);
     }
 }
 

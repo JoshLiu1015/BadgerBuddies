@@ -6,6 +6,7 @@ const findMatches = async (userId) => {
     try {
             // const userId = req.params.id;
             
+            console.log("requesterId: ", userId);
             // Fetch the user's preferences
             const [[userPreferences]] = await Preference.findByUserId(userId);
 
@@ -14,9 +15,9 @@ const findMatches = async (userId) => {
             // findPotentialMatches will join Preference with Match to get the potential matches
 
 
-
+            console.log("userPreferences:", userPreferences);
             // Fetch potential matches based on exercise
-            const [[targetPreferences]] = await Preference.findPotentialMatches(userId, userPreferences.exercise);
+            const [targetPreferences, _] = await Preference.findPotentialMatches(userId, userPreferences.exercise);
             console.log("targetPreferences: ", targetPreferences);
 
 
@@ -25,15 +26,18 @@ const findMatches = async (userId) => {
                 let score = 0;
 
                 // Example scoring logic
+                if (targetPreference.exercise === userPreferences.exercise) score += 20;
                 if (targetPreference.time === userPreferences.time) score += 10;
                 if (targetPreference.location === userPreferences.location) score += 5;
                 if (targetPreference.userLevel === userPreferences.partnerLevel) score += 10;
                 if (targetPreference.gender === userPreferences.partnerGender) score += 5;
                 if (userPreferences.partnerGender === 'any' || userPreferences.location === 'any' || userPreferences.partnerLevel === 'any') score += 2;
 
-                return { matchId: targetPreference.userId, score: score };
+                return { targetId: targetPreference.userId, score: score };
+                // console.log("targetId: ", targetPreference.userId);
+                // console.log("score: ", score);
             });
-
+            // console.log("scoredTargetPreferences: ", scoredTargetPreferences);
             // Sort matches by score in descending order
             scoredTargetPreferences.sort((a, b) => b.score - a.score);
 

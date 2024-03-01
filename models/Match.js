@@ -24,7 +24,7 @@ class Match {
 
 
         let sql = `
-        INSERT INTO Match(
+        INSERT INTO Matches (
             requesterId, 
             targetId, 
             isMatchAccepted, 
@@ -69,7 +69,7 @@ class Match {
         params.push(id);
 
         // Construct the SQL statement
-        let sql = `UPDATE Match SET ${updates.join(', ')} WHERE id = ?`;
+        let sql = `UPDATE Matches SET ${updates.join(', ')} WHERE id = ?`;
 
         // Add lines to debug
         console.log("key: ", updates);
@@ -82,19 +82,19 @@ class Match {
     }
 
     static findByMatchId(id) {
-        let sql = `SELECT * FROM Match WHERE id = ?`;
+        let sql = `SELECT * FROM Matches WHERE id = ?`;
 
         return db.execute(sql, [id]);
     }
 
     static findByRequesterId(id) {
-        let sql = `SELECT * FROM Match WHERE id = ?`;
+        let sql = `SELECT * FROM Matches WHERE requesterId = ?`;
 
         return db.execute(sql, [id]);
     }
 
     static findByTargetId(id) {
-        let sql = `SELECT * FROM Match WHERE id = ?`;
+        let sql = `SELECT * FROM Matches WHERE targetId = ?`;
 
         return db.execute(sql, [id]);
     }
@@ -106,7 +106,7 @@ class Match {
     // }
 
     static delete(id) {
-        let sql = `DELETE FROM Match WHERE id = ?`;
+        let sql = `DELETE FROM Matches WHERE id = ?`;
 
         return db.execute(sql, [id]);
     }

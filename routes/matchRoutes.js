@@ -4,8 +4,9 @@ const matchControllers = require("../controllers/matchControllers");
 const authControllers = require("../controllers/authControllers");
 
 router
-    .route("/")
-    .post(authControllers.authenticateToken, matchControllers.createMatch);
+    .route("/userId/:id")
+    // authControllers.authenticateToken, 
+    .post(matchControllers.createMatch);
 
 router
     .route("/matchId/:id")

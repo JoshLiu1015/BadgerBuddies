@@ -4,22 +4,27 @@ const matchAlgorithm = require("../services/matchAlgorithm")
 const createMatch = async (req, res, next) => {
     try {
         const requesterId = req.params.id;
+        // console.log("requesterId: ", requesterId);
         // call findMatches from algorithmControllers to get matches, use a for loop to create them
         targetPreferences = await matchAlgorithm.findMatches(requesterId);
 
-        // get the request body
-        // const { requesterId, targetId } = req.body;
+
+        let creationInfo = []; // Array to hold creation results
+
+        // console.log("targetPreferences: ", targetPreferences);
 
         for (const preference of targetPreferences) {
+            console.log("preference: ", preference);
             // Create a new Match instance based on the values in the request body
-            const match = new Match(requesterId, preference.userId);
+            const match = new Match(requesterId, preference.targetId);
             // Save the new instance into database
             let [info, _] = await match.save();
+            creationInfo.push(info); // Add the result to the array
             
-            // return status
-            res.status(201).json({message: "Matche created successfully", Info: info});
+            
         }
-        
+        // return status
+        res.status(201).json({message: "Matche created successfully", Info: creationInfo});
         
     } catch(error) {
         next(error);
