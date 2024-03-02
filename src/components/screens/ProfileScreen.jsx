@@ -25,14 +25,15 @@ const ProfileScreen = (props) => {
     }
 
     function handleLoggedOut() {
-        if (isRegistered) {
-            setIsRegistered(false);
-            handleScreenChange("PersonalInfo");
-            setIsRegistering(false);
-        }
-        else if (isLoggedIn) {
-            setIsLoggedIn(false);
-        }
+        // if (isRegistered) {
+        //     setIsRegistered(false);
+        //     handleScreenChange("PersonalInfo");
+        //     setIsRegistering(false);
+        // }
+        // else if (isLoggedIn) {
+        //     setIsLoggedIn(false);
+        // }
+        setIsLoggedIn(false);
     }
 
     return (

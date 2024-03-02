@@ -7,7 +7,7 @@ function SignUpScreen(props) {
 //   const [confirmPasswordVal, setConfirmPasswordVal] = useState("");
 
   return <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
+    <View style={styles.container}>
       <Text style={{ fontSize: 36 }}>Join BadgerBuddies!</Text>
 
       {/* <Text style={{ marginTop: 20 }}>Email</Text>
@@ -32,7 +32,7 @@ function SignUpScreen(props) {
       /> */}
 
       
-      <View style={{ borderWidth: 1, marginTop: 15 }}>
+      <View style={{ borderWidth: 1, marginTop: 350 }}>
           <Button color="crimson" title="Create account" onPress={() => {
             //   if (email === "")
             //       alert("Please enter a username");
@@ -48,14 +48,14 @@ function SignUpScreen(props) {
             //       setEmail("");
             //       setPasswordVal("");
             //       setConfirmPasswordVal("");
-                props.handleSignup();
+                props.setIsRegistered(true);
 
             //   }
 
           }} />
       </View>
 
-      <View style={{ flexDirection: "row", marginTop: 15 }}>
+      <View style={{ flexDirection: "row", marginTop: 50 }}>
         <View style={{ justifyContent: "center" }}>
           <Text>already have an account?</Text>
         </View>
@@ -65,7 +65,7 @@ function SignUpScreen(props) {
       </View>
         
     </View>
-  </TouchableWithoutFeedback>;;
+  </TouchableWithoutFeedback>;
 }
 
 const styles = StyleSheet.create({
@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    input: {
-        height: 40,
-        width: 200,
-        margin: 15,
-        borderWidth: 1,
-        padding: 10,
-      },
+    // input: {
+    //     height: 40,
+    //     width: 200,
+    //     margin: 15,
+    //     borderWidth: 1,
+    //     padding: 10,
+    //   },
 });
 
 export default SignUpScreen;
