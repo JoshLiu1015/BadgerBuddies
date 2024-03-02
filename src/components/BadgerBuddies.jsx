@@ -10,7 +10,7 @@ import PersonalInfoScreen from './screens/PersonalInfoScreen';
 
 
 
-export default function BadgerBuddies(props) {
+function BadgerBuddies(props) {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isRegistering, setIsRegistering] = useState(false);
@@ -26,7 +26,7 @@ export default function BadgerBuddies(props) {
     }
 
 
-    function handleSignup(name, password) {
+    function handleSignup() {
         setIsRegistered(true);
     }
 
@@ -34,7 +34,7 @@ export default function BadgerBuddies(props) {
     if (isLoggedIn) {
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[]}>
+            <BadgerBuddiesContext.Provider value={[isRegistered, setIsRegistered, isLoggedIn, setIsLoggedIn]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>
@@ -45,10 +45,10 @@ export default function BadgerBuddies(props) {
     }
     else if (isRegistered) {
         return <>
-            <BadgerBuddiesContext.Provider value={[]}>
+            <BadgerBuddiesContext.Provider value={[isRegistered, setIsRegistered, isLoggedIn, setIsLoggedIn, handleScreenChange, setIsRegistering]}>
                 <NavigationContainer>
                     {currentScreen === 'PersonalInfo' ? (
-                        <PersonalInfoScreen onScreenChange={handleScreenChange} />
+                        <PersonalInfoScreen setIsRegistered={setIsRegistered} onScreenChange={handleScreenChange} />
                     ) : (
                         <BadgerTabs />
                     )}
@@ -66,3 +66,5 @@ export default function BadgerBuddies(props) {
     }
 
 }
+
+export default BadgerBuddies;

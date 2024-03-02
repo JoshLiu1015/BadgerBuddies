@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-const LoginScreen = (props) => {
+function LoginScreen(props) {
 
   const [usernameVal, setUsernameVal] = useState("");
   const [passwordVal, setPasswordVal] = useState("");
