@@ -34,7 +34,6 @@ class User {
         this.picture = picture;
 
         // 0 means false, 1 means true
-        this.isDeleted = 0;
         this.isEmailVerified = 0;
         this.emailVerificationToken = this.generateVerificationToken();
 
@@ -71,7 +70,6 @@ class User {
             weight,
             height,
             picture,
-            isDeleted,
             isEmailVerified,
             emailVerificationToken,
             createTime
@@ -87,7 +85,6 @@ class User {
             '${this.weight}',
             '${this.height}',
             '${this.picture}',
-            '${this.isDeleted}',
             '${this.isEmailVerified}',
             '${this.emailVerificationToken}',
             '${createTime}'

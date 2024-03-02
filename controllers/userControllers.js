@@ -18,12 +18,24 @@ const createNewUser = async (req, res, next) => {
 
         await user.setPassword(password);
         
-        let [info, _] = await user.save();
         
         // wait for the user to verify email before sending back status
+        // this function is important to get called before user.save()
+        // otherwise if the email address wasn't valid, the user would still
+        // be stored into the database, but will never gets a verification token
         await sendVerificationEmail(user.email, user.emailVerificationToken);
+
         
-        res.status(201).json({Info: info});
+
+        let [info, _] = await user.save();
+        
+        // TODO:
+        // before return json to the user, make sure email is verified before returning
+
+        // TODO:
+        // it also handles login logic here. Call login function to get a token, which will be returned alongside info
+        
+        res.status(200).json({Info: info});
 
     
     } catch(error) {
