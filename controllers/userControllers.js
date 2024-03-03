@@ -19,11 +19,12 @@ const createNewUser = async (req, res, next) => {
         await user.setPassword(password);
         
         
-        // TODO: handle the case where email has been used and return 409
+        // check whether the email has been used and return 409
+        const [[checkEmail]] = await User.findByEmail(email)
         
-
-
-
+        if (checkEmail) {
+            return res.status(409).send("The email has already been used");
+        }
 
 
         // wait for the user to verify email before sending back status

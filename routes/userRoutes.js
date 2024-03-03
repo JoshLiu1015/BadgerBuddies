@@ -18,7 +18,7 @@ to be provided in the request.
 */
 router
     .route("/id/:id")
-    .get(authControllers.authenticateToken, userControllers.getUserById)
+    .get(userControllers.getUserById)
     // update user info
     .patch(authControllers.authenticateToken, userControllers.updateUser)
     // not adding authenticateToken function only because it is easier for testing when developing
