@@ -1,7 +1,6 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView, Modal, Button } from 'react-native';
 import { useState, useEffect, useContext, React } from 'react';
 import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
-import { tokens } from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
 // import { ScrollView } from 'react-native-gesture-handler';
 
 
@@ -16,13 +15,22 @@ const ProfileScreen = (props) => {
     );
 
     const userPhoto = require('../../../assets/swan.webp');
-    // const [userName, setUserName] = useState("Swan")
-    // const [gender, setGender] = useState("Male");
-    // const [major, setMajor] = useState("CS");
-    // const [grade, setGrade] = useState("Freshman");
+    const [editFirstName, setEditFirstName] = useState("");
+    const [editLastName, setEditLastName] = useState("");
+    const [editGender, setEditGender] = useState("");
+    const [editMajor, setEditMajor] = useState("");
+    const [editGrade, setEditGrade] = useState("");
+    const [editWeight, setEditWeight] = useState(null);
+    const [editHeight, setEditHeight] = useState(null);
+
     const [userInfo, setUserInfo] = useState({});
+    const [modalVisible, setModalVisible] = useState(false);
 
     const [setIsLoggedIn, userId] = useContext(BadgerBuddiesContext);
+
+    const editVals = [editFirstName, editLastName, editGender, editMajor, editGrade, editWeight, editHeight];
+    const editSetVals = [setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditGrade, setEditWeight, setEditHeight];
+    const editTitles = ["First name", "Last name", "Gender", "Major", "Grade", "Weight", "Height"];
 
     useEffect(() => {
         // alert(userId);
@@ -38,6 +46,14 @@ const ProfileScreen = (props) => {
             // alert(json.User.id);
             if (json && json.User) {
                 setUserInfo(json.User);
+                setEditFirstName(json.User.firstName);
+                setEditLastName(json.User.lastName);
+                setEditGender(json.User.gender);
+                setEditMajor(json.User.major);
+                setEditGrade(json.User.grade);
+                setEditWeight(json.User.weight);
+                setEditHeight(json.User.height);
+                
             } else {
 
             }
@@ -63,6 +79,11 @@ const ProfileScreen = (props) => {
                 "content": body
             })
         })
+    }
+
+    function onCancelPress() {
+        setModalVisible(false);
+    }
     
 
     function handleLoggedOut() {
@@ -96,7 +117,7 @@ const ProfileScreen = (props) => {
 
         <View style={{ flexDirection: "row", marginTop: 15 }}>
             <View style={{ justifyContent: "center" }}>
-                <TouchableOpacity style={styles.editButton} onPress={onEditPress}>
+                <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
                     <Text style={styles.editButtonText}>Edit</Text>
                 </TouchableOpacity>
             </View>
@@ -106,6 +127,43 @@ const ProfileScreen = (props) => {
                     <Text style={styles.editButtonText}>Logout</Text>
                 </TouchableOpacity>
             </View>
+        </View>
+
+
+        <View>
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+                animationType="slide"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Edit Profile</Text>
+                        {for (let i = 0; i < editVals.length; i++) {
+                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
+                            <TextInput
+                                style={styles.modalInput}
+                                onChangeText={editSetVals[i]}
+                                value={editVals[i]}
+                            />
+                        }}
+                        <Text style={{fontWeight: 'bold', marginBottom: 10}}>First Name</Text>
+                        <TextInput
+                            style={styles.modalInput}
+                            onChangeText={setEditFirstName}
+                            value={editFirstName}
+                        />
+                        
+                        <View style={{ justifyContent: 'center', flexDirection: "row" }}>
+
+                            <Button title="Create Post" onPress={() => onEditPress(editFirstName)} disabled={editFirstName === ""
+                                || editGender === "" || editMajor === "" || editGrade === "" } color="crimson" />
+                            <Button title="Cancel" onPress={onCancelPress} color="gray" />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            
         </View>
 
     </View>
@@ -148,6 +206,29 @@ const styles = StyleSheet.create({
     editButtonText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        width: '80%',
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalInput: {
+        borderWidth: 1,
+        height: 40,
+        marginBottom: 10,
+        padding: 10
     },
   });
 
