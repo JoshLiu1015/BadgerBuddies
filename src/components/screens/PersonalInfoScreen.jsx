@@ -158,6 +158,8 @@ function PersonalInfoScreen(props) {
                     <Button title="Create Account" onPress={goToBadgerTabs} />
                 </View> */}
                 
+
+                {/* TODO: Handle the cases when email, names, majors, weight, height too long */}
                 <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 115 }}>
                     <Button color="crimson" title="Create account" onPress={() => {
                         if (email === "")

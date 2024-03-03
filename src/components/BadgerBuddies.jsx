@@ -18,6 +18,7 @@ function BadgerBuddies(props) {
     const [userId, setUserId] = useState(0);
     const [userEmail, setUserEmail] = useState("");
     const [userFirstName, setUserFirstName] = useState("");
+    const [userGender, setUserGender] = useState("");
 
     function handleScreenChange (screenName) {
         setCurrentScreen(screenName);
@@ -56,7 +57,10 @@ function BadgerBuddies(props) {
                     // set user info for screens
                     setUserEmail(json.User.email);
                     setUserFirstName(json.User.firstName);
-                    await SecureStore.setItemAsync(userFirstName, json.Token);
+                    setUserGender(json.User.gender);
+                    setUserId(json.User.id);
+                    // alert(userId)
+                    await SecureStore.setItemAsync(json.User.firstName, json.Token);
                 }
             }
         } catch (error) {
@@ -94,7 +98,7 @@ function BadgerBuddies(props) {
                 alert("A request must contain a 'username' and 'password'");
             }
             else if (res.status === 409) {
-                alert("That username has already been taken!");
+                alert("The email has already been used!");
             }
             else if (res.status === 413) {
                 alert("'username' must be 64 characters or fewer and 'password' must be 128 characters or fewer")
@@ -104,14 +108,14 @@ function BadgerBuddies(props) {
                 // setIsLoggedIn(true);
                 setIsRegistered(false);
                 setIsRegistering(false);
-                const json = await res.json();
+                // const json = await res.json();
 
                 // alert(json.Info.insertId);
 
-                if (json) {
-                    setUserId(json.Info.insertId);
+                // if (json) {
+                //     setUserId(json.Info.insertId);
                     
-                }
+                // }
             }
         } catch (error) {
             console.error("Error during signup: ", error);
@@ -123,7 +127,7 @@ function BadgerBuddies(props) {
     if (isLoggedIn) {
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[isRegistered, setIsRegistered, isLoggedIn, setIsLoggedIn]}>
+            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>
