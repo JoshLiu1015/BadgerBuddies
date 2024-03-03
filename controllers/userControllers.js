@@ -19,22 +19,28 @@ const createNewUser = async (req, res, next) => {
         await user.setPassword(password);
         
         
+        // TODO: handle the case where email has been used and return 409
+        
+
+
+
+
+
         // wait for the user to verify email before sending back status
         // this function is important to get called before user.save()
         // otherwise if the email address wasn't valid, the user would still
         // be stored into the database, but will never gets a verification token
         await sendVerificationEmail(user.email, user.emailVerificationToken);
 
+        // TODO: handel when email isn't valid, should return something to the frontend
         
-
         let [info, _] = await user.save();
         
-        // TODO:
-        // before return json to the user, make sure email is verified before returning
 
-        // TODO:
-        // it also handles login logic here. Call login function to get a token, which will be returned alongside info
         
+
+
+
         res.status(200).json({Info: info});
 
     
@@ -57,6 +63,40 @@ const createNewUser = async (req, res, next) => {
         next(error);
     }
 }
+
+
+// const loginHelper = async (email) => {
+//     try {
+//         // user is an object in an array that is nested in another array
+//         const [[user], _] = await User.findByEmail(email);
+
+//         // if the user is found
+//         if (user && user.isEmailVerified) {
+
+//             // define a payload
+//             const payload = { id: user.id, email: user.email };
+//             // generate JWT (Json Web Token), which will be send back to the client
+//             // When a new request comes in after the client has logged in,
+//             // the token given to the client will be verified to check 
+//             // authorization header of incoming requests 
+//             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h'});
+
+//             return token;
+            
+//         }
+//         else if (!user) {
+//             // if the user isn't found
+//             throw new Error("user not found")
+//         }
+//         else if (!user.isEmailVerified) {
+//             throw new Error("email not verified");
+//         }
+
+//     } catch(error) {
+//         throw error;
+//     }
+// }
+
 
 const updateUser = async (req, res, next) => {
     try {
@@ -118,7 +158,7 @@ const loginUser = async (req, res, next) => {
         const [[user], _] = await User.findByEmail(email);
 
         // if the user is found
-        if (user) {
+        if (user && user.isEmailVerified) {
             // compare the password user sent with the one stored in database
             const isMatch = await bcrypt.compare(password, user.password);
             // if it matches
@@ -131,18 +171,26 @@ const loginUser = async (req, res, next) => {
                 // authorization header of incoming requests 
                 const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h'});
 
-                return res.status(200).json({ message: "Login successful", token })
+                return res.status(200).json({ User: user, Token: token })
             }
             // if not matches
             return res.status(401).send("Incorrect password");
         }
-        // if the user isn't found
-        return res.status(404).send("User not found");
+        else if (!user) {
+            // if the user isn't found
+            return res.status(404).send("User not found");
+        }
+        else if (!user.isEmailVerified) {
+            return res.status(403).send("Email not verified");
+        }
 
     } catch(error) {
         next(error);
     }
 }
+
+
+
 
 
 

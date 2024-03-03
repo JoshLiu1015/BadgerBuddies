@@ -25,7 +25,7 @@ const sendVerificationEmail = async (userEmail, emailVerificationToken) => {
         from: process.env.EMAIL_USER,
         to: userEmail,
         subject: "Verify your email",
-        html: `Please click this link to verify your email address: <a href="http://localhost:3000/user/verify-email?token=${emailVerificationToken}&email=${userEmail}">Verify Email</a>`
+        html: `Please click this link to verify your email address: <a href="http://192.168.1.168:3000/user/verify-email?token=${emailVerificationToken}&email=${userEmail}">Verify Email</a>`
 
 
     };
@@ -34,7 +34,9 @@ const sendVerificationEmail = async (userEmail, emailVerificationToken) => {
 }
 
 
-const verifyEmail = async (req, res) => {
+
+
+const verifyEmail = async (req, res, next) => {
     try {
         // get the token and email from the request url
         const { token, email } = req.query;
