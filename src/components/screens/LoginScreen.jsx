@@ -3,35 +3,35 @@ import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Ke
 
 function LoginScreen(props) {
 
-  const [usernameVal, setUsernameVal] = useState("");
-  const [passwordVal, setPasswordVal] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
 
   return <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
       <Text style={{ fontSize: 36 }}>BadgerBuddies Login</Text>
-      <Text style={{ marginTop: 20 }}>Username</Text>
+      <Text style={{ marginTop: 20 }}>Email</Text>
       <TextInput
           style={styles.input}
-          onChangeText={setUsernameVal}
-          value={usernameVal}
+          onChangeText={setEmail}
+          value={email}
       />
       <Text>Password</Text>
       <TextInput
           style={styles.input}
-          onChangeText={setPasswordVal}
-          value={passwordVal}
+          onChangeText={setPassword}
+          value={password}
           secureTextEntry={true}
       />
       
       <View style={{ borderWidth: 1, marginTop: 15 }}>
         <Button color="crimson" title="LOGIN" onPress={() => {
-          if (usernameVal === "" || passwordVal === "")
+          if (email === "" || password === "")
               alert("You must provide both a username and password!");
           else{
-            props.handleLogin(usernameVal, passwordVal)
-            setUsernameVal("");
-            setPasswordVal("");
+            props.handleLogin(email, password)
+            setEmail("");
+            setPassword("");
         }
 
         }} />
