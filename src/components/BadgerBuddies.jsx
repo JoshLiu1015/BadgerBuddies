@@ -16,7 +16,7 @@ function BadgerBuddies(props) {
     const [isRegistering, setIsRegistering] = useState(false);
     const [isRegistered, setIsRegistered] = useState(false);
     const [userId, setUserId] = useState(0);
-    const [userEmail, setUserEmail] = useState("");
+    const [secureStoreEmail, setSecureStoreEmail] = useState("");
     const [userFirstName, setUserFirstName] = useState("");
     const [userGender, setUserGender] = useState("");
 
@@ -55,12 +55,14 @@ function BadgerBuddies(props) {
 
                 if (json) {
                     // set user info for screens
-                    setUserEmail(json.User.email);
+                    // setUserEmail(json.User.email);
                     setUserFirstName(json.User.firstName);
                     setUserGender(json.User.gender);
                     setUserId(json.User.id);
                     // alert(userId)
-                    await SecureStore.setItemAsync(json.User.firstName, json.Token);
+                    setSecureStoreEmail(json.User.email.replace("@", ""));
+                    // alert(secureStoreEmail);
+                    await SecureStore.setItemAsync(secureStoreEmail, json.Token);
                 }
             }
         } catch (error) {
@@ -127,7 +129,7 @@ function BadgerBuddies(props) {
     if (isLoggedIn) {
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId]}>
+            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>

@@ -1,7 +1,8 @@
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView, Modal, Button } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView, Modal, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useState, useEffect, useContext, React } from 'react';
 import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
-// import { ScrollView } from 'react-native-gesture-handler';
+import * as SecureStore from 'expo-secure-store';
+
 
 
 
@@ -26,11 +27,16 @@ const ProfileScreen = (props) => {
     const [userInfo, setUserInfo] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [setIsLoggedIn, userId] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
 
     const editVals = [editFirstName, editLastName, editGender, editMajor, editGrade, editWeight, editHeight];
     const editSetVals = [setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditGrade, setEditWeight, setEditHeight];
     const editTitles = ["First name", "Last name", "Gender", "Major", "Grade", "Weight", "Height"];
+
+    const userInfoArray = [userInfo.firstName, userInfo.lastName, userInfo.gender, userInfo.major, userInfo.grade, userInfo.weight, userInfo.height];
+    const bodyTitles = ["firstName", "lastName", "gender", "major", "grade", "weight", "height"];
+
+    const [isUpdated, setIsUpdated] = useState(false);
 
     useEffect(() => {
         // alert(userId);
@@ -42,43 +48,79 @@ const ProfileScreen = (props) => {
                 return res.json()
             } else {
 
-            }}).then(json => {
-            // alert(json.User.id);
-            if (json && json.User) {
-                setUserInfo(json.User);
-                setEditFirstName(json.User.firstName);
-                setEditLastName(json.User.lastName);
-                setEditGender(json.User.gender);
-                setEditMajor(json.User.major);
-                setEditGrade(json.User.grade);
-                setEditWeight(json.User.weight);
-                setEditHeight(json.User.height);
-                
-            } else {
+        }}).then(json => {
+        // alert(json.User.id);
+        if (json && json.User) {
+            // user info is an object
+            setUserInfo(json.User);
 
-            }
+            // set these variables to see the differences after users edit profiles
+            setEditFirstName(json.User.firstName);
+            setEditLastName(json.User.lastName);
+            setEditGender(json.User.gender);
+            setEditMajor(json.User.major);
+            setEditGrade(json.User.grade);
+            setEditWeight(json.User.weight);
+            setEditHeight(json.User.height);
+            // alert(typeof json.User.height === 'number');
+
+            // when updated data is fetched, set the bool back to false
+            // so it can be set to true again when next update
+            setIsUpdated(false);
+
+        } else {
+
+        }
             
         }).catch(error => {
             alert("An error occurred: " + error.message);
             console.error("An error occurred:", error);
         });
-    }, [])
+    }, [userId, isUpdated])
 
 
-
+    // when users edit their profiles
     const onEditPress = async () => {
-        const tokenr = await SecureStore.getItemAsync(props.username)
-        const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
-            method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "title": title,
-                "content": body
+        try {
+            let body = {};
+
+            // loop through every values in the screen
+            editVals.forEach((val, i) => {
+                // if the data is different from last time it was fetched
+                if (val !== userInfoArray[i]) {
+                    // create a new json body containing all changes
+                    body[bodyTitles[i]] = val;
+                }
             })
-        })
+            
+            alert(userId);
+            const token = await SecureStore.getItemAsync(secureStoreEmail);
+            const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+
+            
+            if (res.status === 404) {
+                alert("User not found");
+            }
+            else if (res.status == 200) {
+                alert("Your update was successful");
+
+                // after updating the database, set the bool value
+                // so it will triger useEffect to fetch new data
+                setIsUpdated(true);
+                setModalVisible(false);
+            }
+        } catch (error) {
+            console.error("Error during login: ", error);
+        }
+
+        
     }
 
     function onCancelPress() {
@@ -129,43 +171,46 @@ const ProfileScreen = (props) => {
             </View>
         </View>
 
-
+        
         <View>
+        
             <Modal
                 transparent={true}
                 visible={modalVisible}
                 animationType="slide"
             >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Edit Profile</Text>
-                        {for (let i = 0; i < editVals.length; i++) {
-                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
-                            <TextInput
-                                style={styles.modalInput}
-                                onChangeText={editSetVals[i]}
-                                value={editVals[i]}
-                            />
-                        }}
-                        <Text style={{fontWeight: 'bold', marginBottom: 10}}>First Name</Text>
-                        <TextInput
-                            style={styles.modalInput}
-                            onChangeText={setEditFirstName}
-                            value={editFirstName}
-                        />
+                        {editVals.map((val, i) => {
+                            if (typeof val === 'number') {
+                                val = String(val);
+                            }
+                            return <View key={i}>
+                                <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
+                                <TextInput
+                                    style={styles.modalInput}
+                                    onChangeText={editSetVals[i]}
+                                    value={val}
+                                />
+                            </View>
+                        })}
+                        
+
                         
                         <View style={{ justifyContent: 'center', flexDirection: "row" }}>
 
-                            <Button title="Create Post" onPress={() => onEditPress(editFirstName)} disabled={editFirstName === ""
+                            <Button title="Save" onPress={() => onEditPress()} disabled={editFirstName === ""
                                 || editGender === "" || editMajor === "" || editGrade === "" } color="crimson" />
                             <Button title="Cancel" onPress={onCancelPress} color="gray" />
                         </View>
                     </View>
                 </View>
+                </TouchableWithoutFeedback>
             </Modal>
-            
         </View>
-
+        
     </View>
 
 
