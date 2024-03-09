@@ -1,43 +1,107 @@
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useState } from 'react';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { useState, useContext } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
+import * as SecureStore from 'expo-secure-store';
 
 
 function MatchInfoScreen(props) {
 
 
     const [exercise, setExercise] = useState("");
-    const [time, setTime] = useState("");
+    // time is only assigned value when calling handleTime upon clikcin submit button
+    let time = "";
+    // date is used to handle the drop down menu
+    const [date, setDate] = useState(new Date());
     const [location, setLocation] = useState("");
+    const [userLevel, setUserLevel] = useState("");
     const [partnerLevel, setPartnerLevel] = useState("");
     const [partnerGender, setPartnerGender] = useState("");
     const [exerciseDetails, setExerciseDetails] = useState("");
 
-    const preferenceTitles = ["Exercies", "Time", "Location", "Partner Level", "Partner Gender", "Exercise Details"];
-    const preferenceVals = [exercise, time, location, partnerLevel, partnerGender, exerciseDetails];
-    const preferenceSetVals = [setExercise, setTime, setLocation, setPartnerLevel, setPartnerGender, setExerciseDetails];
+    const preferenceTitles = ["Exercies", "Time", "Location", "Your Level", "Partner Level", "Partner Gender", "Exercise Details"];
+    const preferenceVals = [exercise, date, location, userLevel, partnerLevel, partnerGender, exerciseDetails];
+    const preferenceSetVals = [setExercise, null, setLocation, setUserLevel, setPartnerLevel, setPartnerGender, setExerciseDetails];
 
-    // const [openDropdown, setOpenDropdown] = useState(null);
 
-    const options = [[{label: "Basketball", value: "Basketball"}, {label: "Badminton", value: "Badminton"}, 
-        {label: "Boxing", value: "Boxing"}, {label: "Cycling", value: "Cycling"},
-        {label: "Dancing", value: "Dancing"}, {label: "Running", value: "Running"},
-        {label: "Soccer", value: "Soccer"}, {label: "Workout", value: "Workout"},
-        {label: "Other", value: "Other"}], 
-        [""], [{label: "Nic", value: "Nic"}, {label: "Bakke", value: "Bakke"}, {label: "Other", value: "Other"}],
-        [{label: "Beginner", value: "Beginner"}, {label: "Intermediate", value: "Intermediate"},
-        {label: "Advanced", value: "Advancced"}, {label: "Other", value: "Other"}], 
-        [{label: "Male", value: "Male"}, {label: "Female", value: "Female"},
-        {label: "Other", value: "Other"}], [{label: "Chest", value: "Chest"},
-        {label: "Legs", value: "Legs"}, {label: "Back", value: "Back"},
-        {label: "Arms", value: "Arms"}, {label: "Abs", value: "Abs"}]];
+    const [_, userId, secureStoreEmail, userGender] = useContext(BadgerBuddiesContext);
+    /*
+    Label: This is what the user sees in the UI. It's the human-readable text that makes sense to the users selecting an option.
+    The label is typically a string that describes the choice.
+
+    Value: This is the actual data value that the system uses. When a user selects an option, 
+    this is the value that you'll typically use in your code or send to a server or database. While often a string, 
+    the value doesn't have to be; it can be any type that your application logic is designed to work with, such as numbers, objects, etc.
+    */
     
-    // const toggleDropdown = (dropdownIndex) => {
-    //     setOpenDropdown(openDropdown === dropdownIndex ? null : dropdownIndex);
-    //     };
+    const options = [[{label: "Basketball", value: "basketball"}, {label: "Badminton", value: "badminton"}, 
+        {label: "Boxing", value: "boxing"}, {label: "Cycling", value: "cycling"},
+        {label: "Dancing", value: "dancing"}, {label: "Running", value: "running"},
+        {label: "Soccer", value: "soccer"}, {label: "Workout", value: "workout"},
+        {label: "Other", value: "other"}], null,
+        [{label: "Nic", value: "nicholas"}, {label: "Bakke", value: "bakke"}, {label: "Other", value: "other"}],
+        [{label: "Beginner", value: "beginner"}, {label: "Intermediate", value: "intermediate"},
+        {label: "Advanced", value: "advancced"}, {label: "Other", value: "other"}],
+        [{label: "Beginner", value: "beginner"}, {label: "Intermediate", value: "intermediate"},
+        {label: "Advanced", value: "advancced"}, {label: "Other", value: "other"}], 
+        [{label: "Male", value: "male"}, {label: "Female", value: "female"},
+        {label: "Other", value: "other"}], [{label: "Chest", value: "chest"},
+        {label: "Legs", value: "legs"}, {label: "Back", value: "back"},
+        {label: "Arms", value: "arms"}, {label: "Abs", value: "abs"}]];
     
+    
+    
+    // called when users select a date from the drop down menu 
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+    };
+
+    // When submitting the form, you can format the `date` state to a string
+    // that's compatible with MySQL DATETIME type like so:
+    const handleTime = () => {
+
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        
+        // Use formattedDate to send to your backend or store in the state
+        return formattedDate;
+    };
+
+
+    const handleSubmit = async () => {
+        try {
+            // alert(secureStoreEmail);
+            const token = await SecureStore.getItemAsync(secureStoreEmail);
+            
+            const res = await fetch(`http://192.168.1.168:3000/preference`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "userId": userId,
+                    "exercise": exercise,
+                    "time": time,
+                    "location": location,
+                    "userLevel": userLevel,
+                    "partnerLevel": partnerLevel,
+                    "userGender": userGender,
+                    "partnerGender": partnerGender,
+                    "exerciseDetails": exerciseDetails
+                })
+            })
+            
+            
+
+            if (res.status == 200) {
+                alert("Your preferences were saved");
+            }
+        } catch (error) {
+            console.error("Error during saving preferences: ", error);
+        }
+    }
 
 
     return <View style={styles.container}>
@@ -45,108 +109,67 @@ function MatchInfoScreen(props) {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={styles.overlay}>
                     <View style={styles.content}>
-                        <Text style={styles.title}>Partner Preference</Text>
-                        {/* {preferenceVals.map((val, i) => {
-                            return <View key={i}>
-                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{preferenceTitles[i]}</Text>
-                            <View style={styles.input}>
-                                {val !== "" && <Text>Selected: {val}</Text>}
-                            </View>
-                            <Picker
-                                selectedValue={val}
-                                onValueChange={preferenceSetVals[i]}
-                                style={styles.input}>
-                                {options[i].map((option, index) => (
-                                    <Picker.Item key={index} label={option} value={option} />
-                                ))}
-                            </Picker>
-
-                        </View>
-                        })} */}
+                        <Text style={styles.title}>Preferences</Text>
                         {preferenceTitles.map((title, index) => {
-                            // Assuming each preference has its own state and setter function
-                            // const [open, setOpen] = useState(false);
-                            // const [value, setValue] = useState(null);
-                            const [items, setItems] = useState(options[index]);
+                            if (title === "Time") {
 
-                            return (
-                            <View key={index} style={{ marginBottom: 20 }}>
-                                <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
-                                {/* <DropDownPicker
-                                open={openDropdown === index}
-                                value={value}
-                                items={items}
-                                setOpen={() => toggleDropdown(index)}
-                                setValue={setValue}
-                                setItems={setItems}
-                                style={{ borderWidth: 1, backgroundColor: 'white' }} // Ensure background color is set
-                                dropDownContainerStyle={{ borderWidth: 1, backgroundColor: 'white', zIndex: 10000 }} // Ensure background color is set
-                                modal={true}
+                                return <View key={index} style={{ marginBottom: 20 }}>
+                                    <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                    <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={date}
+                                        mode="datetime"
+                                        is24Hour={true}
+                                        display="default"
+                                        onChange={onChange}
+                                    />
+                                </View>
 
-                                /> */}
-                                <RNPickerSelect
-                                    onValueChange={(value) => preferenceSetVals[index](value)}
-                                    items={items}
-                                    style={pickerSelectStyles}
-                                    useNativeAndroidPickerStyle={false}
-                                    placeholder={{ label: "Select", value: null }}
-                                />
-                            </View>
-                            );
+                            }
+                            else {
+                                // Assuming each preference has its own state and setter function
+                                // const [open, setOpen] = useState(false);
+                                // const [value, setValue] = useState(null);
+                                const [items, setItems] = useState(options[index]);
+
+                                return <View key={index} style={{ marginBottom: 20 }}>
+                                    <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                    <RNPickerSelect
+                                        onValueChange={(value) => preferenceSetVals[index](value)}
+                                        items={items}
+                                        style={pickerSelectStyles}
+                                        useNativeAndroidPickerStyle={false}
+                                        placeholder={{ label: "Select", value: null }}
+                                    />
+                                </View>;
+                            }
+                            
                         })}
                     </View>
                     
-                    
-                    
 
-                    {/* TODO: Handle the cases when email, names, majors, weight, height too long */}
-                    {/* <View style={{ borderWidth: 1, marginBottom: 15,  marginHorizontal: 115 }}>
-                        <Button color="crimson" title="Submit" onPress={() => {
-                            if (email === "")
-                                alert("Please enter your email");
-                            else if (password === "")
-                                alert("Please enter your password");
-                            else if (confirmPassword === "")
-                                alert("Please enter your confirm password")
-                            else if (password !== confirmPassword)
-                                alert("Passwords do not match")
-                            else if (firstName === "")
-                                alert("Please enter your first name")
-                            else if (lastName === "")
-                                alert("Please enter your last name")
-                            else if (gender === "")
-                                alert("Please enter your gender")
-                            else if (major === "")
-                                alert("Please enter your major")
-                            else if (grade === "")
-                                alert("Please enter your grade")
-                            else if (weight === "")
-                                alert("Please enter your weight")
-                            else if (parseFloat(weight, 2) === NaN)
-                                alert("Please enter a valid number for your weight")
-                            else if (height === "")
-                                alert("Please enter your height")
-                            else if (parseFloat(height, 2) === NaN)
-                                alert("Please enter a valid number for your height")
-                            else{
-                                // props.onScreenChange('BadgerTabs');
-                                props.handleSignup(email, password, firstName, lastName, gender, major, grade, weight, height, picture);
 
-                            }
-                            preferenceVals.forEach(element => {
-                                alert(element);
-                            });
-                        }} />
-
-                        
-                    </View> */}
-                        
-
-                        
                     <TouchableOpacity style={styles.editButton} onPress={() => {
-                        preferenceVals.forEach(element => {
-                            alert(element);
+                        let isEmpty = false;
+
+                        preferenceVals.forEach((element, index) => {
+                            if (typeof element === 'object') {
+                                time = handleTime();
+                            }
+                            else {
+                                if (element === "") {
+
+                                    alert("Please select a value for " + preferenceTitles[index]);
+                                    isEmpty = true;
+                                }
+                            }
                         });
+                        
+                        // onlyl submitt user preferences when everything is selected
+                        if (!isEmpty) {
+                            handleSubmit();
+                        }
+
                     }}>
                         <Text style={styles.editButtonText}>Submit</Text>
                     </TouchableOpacity>

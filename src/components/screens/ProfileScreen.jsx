@@ -27,7 +27,7 @@ const ProfileScreen = (props) => {
     const [userInfo, setUserInfo] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail, _, setUserGender] = useContext(BadgerBuddiesContext);
 
     const editVals = [editFirstName, editLastName, editGender, editMajor, editGrade, editWeight, editHeight];
     const editSetVals = [setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditGrade, setEditWeight, setEditHeight];
@@ -89,12 +89,18 @@ const ProfileScreen = (props) => {
             editVals.forEach((val, i) => {
                 // if the data is different from last time it was fetched
                 if (val !== userInfoArray[i]) {
+                    // if users changed their genders,
+                    // the gender state variable in the BudgerBuddies screen should be updated
+                    // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
+                    if (bodyTitles[i] === "gender") {
+                        setUserGender(val);
+                    }
                     // create a new json body containing all changes
                     body[bodyTitles[i]] = val;
                 }
             })
             
-            alert(userId);
+            // alert(userId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
             // const res = await fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
             const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
@@ -139,6 +145,7 @@ const ProfileScreen = (props) => {
         // else if (isLoggedIn) {
         //     setIsLoggedIn(false);
         // }
+        SecureStore.deleteItemAsync(secureStoreEmail);
         setIsLoggedIn(false);
     }
 

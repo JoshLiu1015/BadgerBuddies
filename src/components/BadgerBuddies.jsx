@@ -132,7 +132,7 @@ function BadgerBuddies(props) {
     if (isLoggedIn) {
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail]}>
+            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, userGender, setUserGender]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>
