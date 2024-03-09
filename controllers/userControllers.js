@@ -104,6 +104,10 @@ const updateUser = async (req, res, next) => {
         const userId = req.params.id;
         const updateData = req.body;
         const [info, _] = await User.update(userId, updateData);
+        
+        if (info.affectedRows === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
         res.status(200).json({Info: info});
     } catch(error) {

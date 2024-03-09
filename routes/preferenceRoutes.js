@@ -6,7 +6,7 @@ const authControllers = require("../controllers/authControllers");
 router
     .route("/")
     // authControllers.authenticateToken, 
-    .post(preferenceControllers.createPreference);
+    .post(authControllers.authenticateToken, preferenceControllers.createPreference);
 
 router
     .route("/preferenceId/:id")
