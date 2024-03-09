@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import BadgerTabs from './navigation/BadgerTabs';
 import InfoStack from "./navigation/InfoStack";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SignUpScreen from './screens/SignUpScreen';
 import LoginScreen from './screens/LoginScreen';
 import BadgerBuddiesContext from '../../contexts/BadgerBuddiesContext';
@@ -20,9 +20,9 @@ function BadgerBuddies(props) {
     const [userFirstName, setUserFirstName] = useState("");
     const [userGender, setUserGender] = useState("");
 
-    function handleScreenChange (screenName) {
-        setCurrentScreen(screenName);
-    };
+
+
+
 
     const handleLogin = async (email, password) => {
         try {
@@ -62,9 +62,12 @@ function BadgerBuddies(props) {
                     setUserGender(json.User.gender);
                     setUserId(json.User.id);
                     // alert(userId)
-                    setSecureStoreEmail(json.User.email.replace("@", ""));
+                    const updatedSecureStoreEmail = json.User.email.replace("@", "");
+                    // alert("first:" + updatedSecureStoreEmail);
+                    await SecureStore.setItemAsync(updatedSecureStoreEmail, json.Token);
+                    
+                    setSecureStoreEmail(updatedSecureStoreEmail);
                     // alert(secureStoreEmail);
-                    await SecureStore.setItemAsync(secureStoreEmail, json.Token);
                 }
             }
         } catch (error) {
@@ -130,6 +133,7 @@ function BadgerBuddies(props) {
 
 
     if (isLoggedIn) {
+        alert("secureStoreEmail: " + secureStoreEmail)
         // it should return the screen after logging in
         return <>
             <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, userGender, setUserGender]}>
