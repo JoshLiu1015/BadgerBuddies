@@ -40,6 +40,7 @@ const ProfileScreen = (props) => {
 
     useEffect(() => {
         // alert(userId);
+        // fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
         fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
 
         }).then(res => {
@@ -95,6 +96,7 @@ const ProfileScreen = (props) => {
             
             alert(userId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
+            // const res = await fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
             const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
                 method: "PATCH",
                 headers: {
@@ -180,33 +182,35 @@ const ProfileScreen = (props) => {
                 animationType="slide"
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Edit Profile</Text>
-                        {editVals.map((val, i) => {
-                            if (typeof val === 'number') {
-                                val = String(val);
-                            }
-                            return <View key={i}>
-                                <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
-                                <TextInput
-                                    style={styles.modalInput}
-                                    onChangeText={editSetVals[i]}
-                                    value={val}
-                                />
+                    <ScrollView>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Edit Profile</Text>
+                                {editVals.map((val, i) => {
+                                    if (typeof val === 'number') {
+                                        val = String(val);
+                                    }
+                                    return <View key={i}>
+                                        <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
+                                        <TextInput
+                                            style={styles.modalInput}
+                                            onChangeText={editSetVals[i]}
+                                            value={val}
+                                        />
+                                    </View>
+                                })}
+                                
+
+                                
+                                <View style={{ justifyContent: 'center', flexDirection: "row" }}>
+
+                                    <Button title="Save" onPress={() => onEditPress()} disabled={editFirstName === ""
+                                        || editGender === "" || editMajor === "" || editGrade === "" } color="crimson" />
+                                    <Button title="Cancel" onPress={onCancelPress} color="gray" />
+                                </View>
                             </View>
-                        })}
-                        
-
-                        
-                        <View style={{ justifyContent: 'center', flexDirection: "row" }}>
-
-                            <Button title="Save" onPress={() => onEditPress()} disabled={editFirstName === ""
-                                || editGender === "" || editMajor === "" || editGrade === "" } color="crimson" />
-                            <Button title="Cancel" onPress={onCancelPress} color="gray" />
                         </View>
-                    </View>
-                </View>
+                    </ScrollView>
                 </TouchableWithoutFeedback>
             </Modal>
         </View>
@@ -259,6 +263,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     modalContent: {
+        paddingTop: 50,
         backgroundColor: 'white',
         padding: 20,
         width: '80%',
@@ -267,7 +272,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 50,
     },
     modalInput: {
         borderWidth: 1,
