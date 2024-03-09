@@ -6,6 +6,7 @@ const createPreference = async (req, res, next) => {
         const { userId, exercise, time, location, userLevel, partnerLevel, userGender, partnerGender, exerciseDetails } = req.body;
         // create a new Preference instance based on the values in the request body
         const preference = new Preference(userId, exercise, time, location, userLevel, partnerLevel, userGender, partnerGender, exerciseDetails);
+
         // save the new instance into database
         let [info, _] = await preference.save();
         // return status
