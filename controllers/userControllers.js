@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { sendVerificationEmail } = require("./authControllers");
 
 
-
+// create a new user
 const createNewUser = async (req, res, next) => {
     try {
         const {email, password, firstName, lastName,
