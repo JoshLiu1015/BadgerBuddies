@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
@@ -25,7 +25,9 @@ function MatchInfoScreen(props) {
     const preferenceSetVals = [setExercise, null, setLocation, setUserLevel, setPartnerLevel, setPartnerGender, setExerciseDetails];
 
 
-    const [_, userId, secureStoreEmail, userGender] = useContext(BadgerBuddiesContext);
+    // const [_, userId, secureStoreEmail, userGender] = useContext(BadgerBuddiesContext);
+
+    const [setIsRegistered, handleSignup, userId] = useContext(BadgerBuddiesContext);
     /*
     Label: This is what the user sees in the UI. It's the human-readable text that makes sense to the users selecting an option.
     The label is typically a string that describes the choice.
@@ -40,7 +42,7 @@ function MatchInfoScreen(props) {
         {label: "Dancing", value: "dancing"}, {label: "Running", value: "running"},
         {label: "Soccer", value: "soccer"}, {label: "Workout", value: "workout"},
         {label: "Other", value: "other"}], null,
-        [{label: "Nic", value: "nicholas"}, {label: "Bakke", value: "bakke"}, {label: "Other", value: "other"}],
+        [{label: "Nic", value: "nicholas"}, {label: "Bakke", value: "bakke"}, {label: "Any", value: "any"}],
         [{label: "Beginner", value: "beginner"}, {label: "Intermediate", value: "intermediate"},
         {label: "Advanced", value: "advancced"}, {label: "Other", value: "other"}],
         [{label: "Beginner", value: "beginner"}, {label: "Intermediate", value: "intermediate"},
@@ -69,25 +71,26 @@ function MatchInfoScreen(props) {
     };
 
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (newUserId) => {
+        alert("UserId: " + newUserId);
         try {
             // alert(secureStoreEmail);
-            const token = await SecureStore.getItemAsync(secureStoreEmail);
+            // const token = await SecureStore.getItemAsync(secureStoreEmail);
             
             const res = await fetch(`http://192.168.1.168:3000/preference`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${token}`,
+                    // "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "userId": userId,
+                    "userId": newUserId,
                     "exercise": exercise,
                     "time": time,
                     "location": location,
                     "userLevel": userLevel,
                     "partnerLevel": partnerLevel,
-                    "userGender": userGender,
+                    "userGender": props.route.params.gender,
                     "partnerGender": partnerGender,
                     "exerciseDetails": exerciseDetails
                 })
@@ -149,7 +152,7 @@ function MatchInfoScreen(props) {
                     
 
 
-                    <TouchableOpacity style={styles.editButton} onPress={() => {
+                    <TouchableOpacity style={styles.editButton} onPress={async () => {
                         let isEmpty = false;
 
                         preferenceVals.forEach((element, index) => {
@@ -167,7 +170,19 @@ function MatchInfoScreen(props) {
                         
                         // onlyl submitt user preferences when everything is selected
                         if (!isEmpty) {
-                            handleSubmit();
+                            try {
+                                // this will call the handleSignup function in BadgerBuddies screen
+                                const newUserId = await handleSignup(props.route.params.email, props.route.params.password, props.route.params.firstName, props.route.params.lastName,
+                                    props.route.params.gender, props.route.params.major, props.route.params.grade, props.route.params.weight,
+                                    props.route.params.height, props.route.params.picture);
+                                
+                                alert("new user id: " + newUserId);
+                                handleSubmit(newUserId);
+                            } catch (error) {
+                                console.error("Error during signup: ", error);
+                            }
+
+                            
                         }
 
                     }}>

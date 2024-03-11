@@ -96,8 +96,8 @@ function BadgerBuddies(props) {
                     "gender": gender,
                     "major": major,
                     "grade": grade,
-                    "weight": parseFloat(weight, 2),
-                    "height": parseFloat(height, 2),
+                    "weight": parseInt(weight, 10),
+                    "height": parseInt(height, 10),
                     "picture": picture
                 })
             })
@@ -116,14 +116,17 @@ function BadgerBuddies(props) {
                 // setIsLoggedIn(true);
                 setIsRegistered(false);
                 setIsRegistering(false);
-                // const json = await res.json();
+
+
+                const json = await res.json();
 
                 // alert(json.Info.insertId);
 
-                // if (json) {
-                //     setUserId(json.Info.insertId);
+                if (json) {
+                    return json.Info.insertId;
+                    // setUserId(json.Info.insertId);
                     
-                // }
+                }
             }
         } catch (error) {
             console.error("Error during signup: ", error);
@@ -133,7 +136,8 @@ function BadgerBuddies(props) {
 
 
     if (isLoggedIn) {
-        alert("secureStoreEmail: " + secureStoreEmail)
+        // alert("secureStoreEmail: " + secureStoreEmail)
+
         // it should return the screen after logging in
         return <>
             <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, userGender, setUserGender]}>
@@ -147,7 +151,14 @@ function BadgerBuddies(props) {
     }
     // 
     else if (isRegistered) {
-        return <PersonalInfoScreen setIsRegistered={setIsRegistered} handleSignup={handleSignup} />
+        return <BadgerBuddiesContext.Provider value={[setIsRegistered, handleSignup, userId]}>
+            <NavigationContainer>
+                <InfoStack/>
+            </NavigationContainer>
+        </BadgerBuddiesContext.Provider>
+        
+        
+        // <PersonalInfoScreen setIsRegistered={setIsRegistered} handleSignup={handleSignup} />
             
             {/* <BadgerBuddiesContext.Provider value={[isRegistered, setIsRegistered, isLoggedIn, setIsLoggedIn, handleScreenChange, setIsRegistering]}>
                 <NavigationContainer>
