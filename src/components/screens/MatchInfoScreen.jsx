@@ -72,7 +72,7 @@ function MatchInfoScreen(props) {
 
 
     const handleSubmit = async (newUserId) => {
-        alert("UserId: " + newUserId);
+        // alert("UserId: " + newUserId);
         try {
             // alert(secureStoreEmail);
             // const token = await SecureStore.getItemAsync(secureStoreEmail);
@@ -142,7 +142,8 @@ function MatchInfoScreen(props) {
                                         items={items}
                                         style={pickerSelectStyles}
                                         useNativeAndroidPickerStyle={false}
-                                        placeholder={{ label: "Select", value: null }}
+                                        value={preferenceVals[index]}
+                                        placeholder={{ label: "Select", value: "" }}
                                     />
                                 </View>;
                             }
@@ -151,43 +152,58 @@ function MatchInfoScreen(props) {
                     </View>
                     
 
+                    <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
+                        <TouchableOpacity style={styles.editButton} onPress={async () => {
+                            let isEmpty = false;
 
-                    <TouchableOpacity style={styles.editButton} onPress={async () => {
-                        let isEmpty = false;
+                            for (const [index, element] of preferenceVals.entries()) {
+                                if (typeof element === 'object') {
+                                    time = handleTime();
+                                }
+                                else {
+                                    if (element === "") {
 
-                        preferenceVals.forEach((element, index) => {
-                            if (typeof element === 'object') {
-                                time = handleTime();
-                            }
-                            else {
-                                if (element === "") {
-
-                                    alert("Please select a value for " + preferenceTitles[index]);
-                                    isEmpty = true;
+                                        alert("Please select a value for " + preferenceTitles[index]);
+                                        isEmpty = true;
+                                        break;
+                                    }
                                 }
                             }
-                        });
-                        
-                        // onlyl submitt user preferences when everything is selected
-                        if (!isEmpty) {
-                            try {
-                                // this will call the handleSignup function in BadgerBuddies screen
-                                const newUserId = await handleSignup(props.route.params.email, props.route.params.password, props.route.params.firstName, props.route.params.lastName,
-                                    props.route.params.gender, props.route.params.major, props.route.params.grade, props.route.params.weight,
-                                    props.route.params.height, props.route.params.picture);
+
+                            // preferenceVals.forEach((element, index) => {
+                            //     if (typeof element === 'object') {
+                            //         time = handleTime();
+                            //     }
+                            //     else {
+                            //         if (element === "") {
+
+                            //             alert("Please select a value for " + preferenceTitles[index]);
+                            //             isEmpty = true;
+                            //         }
+                            //     }
+                            // });
+                            
+                            // onlyl submitt user preferences when everything is selected
+                            if (!isEmpty) {
+                                try {
+                                    // this will call the handleSignup function in BadgerBuddies screen
+                                    const newUserId = await handleSignup(props.route.params.email, props.route.params.password, props.route.params.firstName, props.route.params.lastName,
+                                        props.route.params.gender, props.route.params.major, props.route.params.grade, props.route.params.weight,
+                                        props.route.params.height, props.route.params.picture);
+                                    
+                                    // alert("new user id: " + newUserId);
+                                    handleSubmit(newUserId);
+                                } catch (error) {
+                                    console.error("Error during signup: ", error);
+                                }
+
                                 
-                                alert("new user id: " + newUserId);
-                                handleSubmit(newUserId);
-                            } catch (error) {
-                                console.error("Error during signup: ", error);
                             }
 
-                            
-                        }
-
-                    }}>
-                        <Text style={styles.editButtonText}>Submit</Text>
-                    </TouchableOpacity>
+                        }}>
+                            <Text style={styles.editButtonText}>Submit</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     {/* <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 115 }}>
                         <Button color="grey" title="Go back" onPress={() => {
@@ -205,24 +221,16 @@ function MatchInfoScreen(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // alignItems: 'center',
-        justifyContent: 'flex-start',
-        // paddingTop: 50,
         backgroundColor: '#fff',
     },
     overlay: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        
+        flexGrow: 1,
+        justifyContent: 'center', // This centers content vertically in the screen
+        alignItems: 'center', // This centers content horizontally in the screen
     },
     content: {
-        paddingTop: 50,
-        backgroundColor: 'white',
-        padding: 20,
-        width: '80%',
-        elevation: 5,
+        width: '90%', // May adjust based on how wide you want the form
+        maxWidth: 600, // Ensures the form doesn't stretch too wide on large devices
     },
     title: {
         fontSize: 20,
@@ -236,10 +244,11 @@ const styles = StyleSheet.create({
         padding: 10
     },
     editButton: {
-        // marginTop: 20,
         backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
+        padding: 15,
+        borderRadius: 0,
+        alignItems: 'center', // Text inside button is centered
+        marginBottom: 0,
     },
     editButtonText: {
         color: 'white',

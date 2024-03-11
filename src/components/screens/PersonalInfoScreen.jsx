@@ -43,10 +43,9 @@ function PersonalInfoScreen(props) {
     return <View style={styles.container}>
         <ScrollView>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={{flex: 1}}>
-
-            {/* <Text style={styles.header}>Create Account</Text> */}
-                        {/* <TouchableOpacity style={styles.imageUpload}>
+                <View style={styles.overlay}>
+                    <View style={styles.content}>
+                        <TouchableOpacity style={styles.imageUpload}>
                             <Image 
                             // source={{ uri: 'path_to_default_image' }} 
                             style={styles.image} 
@@ -62,22 +61,34 @@ function PersonalInfoScreen(props) {
 
                                 const [items, setItems] = useState(options[index]);
 
-                                return <View key={index}>
+                                return <View key={index} style={{ marginBottom: 20 }}>
                                     <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
                                     <RNPickerSelect
                                         onValueChange={(value) => setVals[index](value)}
                                         items={items}
-                                        style={styles.input}
+                                        style={pickerSelectStyles}
                                         useNativeAndroidPickerStyle={false}
-                                        placeholder={{ label: "Select", value: null }}
+                                        value={vals[index]}
+                                        placeholder={{ label: "Select", value: "" }}
+                                    />
+                                </View>
+                            }
+                            else if (title === "Password" || title === "Confirm Password") {
+                                return <View key={index} style={{ marginBottom: 20 }}>
+                                    <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={setVals[index]}
+                                        value={vals[index]}
+                                        secureTextEntry={true}
                                     />
                                 </View>
                             }
                             else {
-                                return <View key={index}>
+                                return <View key={index} style={{ marginBottom: 20 }}>
                                     <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
                                     <TextInput
-                                        placeholder={title}
+                                        // placeholder={title}
                                         style={styles.input}
                                         onChangeText={setVals[index]}
                                         value={vals[index]}
@@ -85,16 +96,17 @@ function PersonalInfoScreen(props) {
                                 </View>
                             }
                         })}
-                        </View> */}
+                        </View>
+                    </View>    
                         
-                    <TouchableOpacity style={styles.imageUpload}>
-                        <Image 
-                        // source={{ uri: 'path_to_default_image' }} 
-                        style={styles.image} 
-                        />
-                        <Text>Upload Image</Text>
+                        {/* <TouchableOpacity style={styles.imageUpload}>
+                            <Image 
+                            // source={{ uri: 'path_to_default_image' }} 
+                            style={styles.image} 
+                            />
+                            <Text>Upload Image</Text>
 
-                    </TouchableOpacity>
+                        </TouchableOpacity>
                         <View style={styles.container}>
                             <TextInput
                                 placeholder='Email'
@@ -159,7 +171,7 @@ function PersonalInfoScreen(props) {
                                 value={height}
                             />
                             
-                        </View>
+                        </View> */}
                         
                         {/* <View style={{borderWidth: 1, margin: 15, marginHorizontal: 115}}>
                             <Button title="Create Account" onPress={goToBadgerTabs} />
@@ -169,6 +181,7 @@ function PersonalInfoScreen(props) {
                         {/* TODO: Handle the cases when email, names, majors, weight, height too long */}
                         <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
                             <TouchableOpacity style={styles.editButton} onPress={() => {
+
                                 if (email === "" || email.length > 240)
                                 alert("Please enter a valid email address.");
                                 else if (password === "" || password.length < 8 || password.length > 128)
@@ -182,8 +195,9 @@ function PersonalInfoScreen(props) {
                                 // last name can be null
                                 else if (lastName.length > 100)
                                     alert("Please enter a valid last name")
-                                else if (gender === "")
+                                else if (gender === "") {
                                     alert("Please enter your gender")
+                                }
                                 else if (major === "")
                                     alert("Please enter your major")
                                 else if (grade === "")
@@ -255,11 +269,7 @@ function PersonalInfoScreen(props) {
                                 setIsRegistered(false);
                             }} />
                         </View>
-
-                    
-                
-
-                    
+                        
                 </View>
             </TouchableWithoutFeedback>
         </ScrollView>
@@ -270,57 +280,69 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     overlay: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        
+        flexGrow: 1,
+        justifyContent: 'center', // This centers content vertically in the screen
+        alignItems: 'center', // This centers content horizontally in the screen
     },
     content: {
-        paddingTop: 50,
-        backgroundColor: 'white',
-        padding: 20,
-        width: '80%',
-        elevation: 5,
+        width: '90%', // May adjust based on how wide you want the form
+        maxWidth: 600, // Ensures the form doesn't stretch too wide on large devices
     },
-    // header: {
-    //     fontSize: 24,
-    //     fontWeight: 'bold',
-    //     marginBottom: 20,
-    //     marginTop: 20,
-    // },
     imageUpload: {
         alignItems: 'center',
         marginBottom: 20,
     },
     image: {
-        flex: 1,
-        width: 100,
-        height: 100,
+        width: 100, // Adjust as needed
+        height: 100, // Adjust as needed
         marginBottom: 10,
     },
     input: {
-        height: 40,
-        width: 200,
-        margin: 15,
         borderWidth: 1,
-        padding: 10,
+        // borderColor: '#ddd',
+        borderRadius: 5,
+        padding: 15,
+        // marginBottom: 20,
+        width: '100%', // Inputs take full width
     },
     editButton: {
-        // marginTop: 20,
         backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
+        padding: 15,
+        borderRadius: 0,
+        alignItems: 'center', // Text inside button is centered
+        marginBottom: 0,
     },
     editButtonText: {
         color: 'white',
         fontWeight: 'bold',
     },
 });
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+});
+
 
 export default PersonalInfoScreen;
 
