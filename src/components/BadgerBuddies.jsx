@@ -51,11 +51,11 @@ function BadgerBuddies(props) {
             }
             else if (res.status == 200) {
                 alert("Your login was successful");
-                setIsLoggedIn(true); // I should really do a fetch to login first!
+                setIsLoggedIn(true);
 
                 const json = await res.json();
 
-                if (json) {
+                if (json && json.User) {
                     // set user info for screens
                     // setUserEmail(json.User.email);
                     setUserFirstName(json.User.firstName);
