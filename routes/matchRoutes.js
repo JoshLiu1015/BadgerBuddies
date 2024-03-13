@@ -6,7 +6,7 @@ const authControllers = require("../controllers/authControllers");
 router
     .route("/userId/:id")
     // authControllers.authenticateToken, 
-    .post(matchControllers.createMatch);
+    .post(authControllers.authenticateToken, matchControllers.createMatch);
 
 router
     .route("/matchId/:id")

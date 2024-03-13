@@ -17,7 +17,7 @@ class Preference {
         this.partnerGender = partnerGender;
         this.exerciseDetails = exerciseDetails;
 
-        this.isActive = 0;
+        this.isActive = 1;
     }
 
 

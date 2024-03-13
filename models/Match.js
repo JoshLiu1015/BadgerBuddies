@@ -88,7 +88,9 @@ class Match {
     }
 
     static findByRequesterId(id) {
-        let sql = `SELECT * FROM Matches WHERE requesterId = ?`;
+        let sql = `SELECT * FROM Matches m, Users u
+            WHERE m.targetId = u.id
+            AND m.requesterId = ?`;
 
         return db.execute(sql, [id]);
     }

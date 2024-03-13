@@ -41,8 +41,8 @@ const findMatches = async (userId) => {
             // Sort matches by score in descending order
             scoredTargetPreferences.sort((a, b) => b.score - a.score);
 
-            // Return the top 20 matches
-            return scoredTargetPreferences.slice(0, 20);
+            // Return the top 3 matches
+            return scoredTargetPreferences.slice(0, 3);
 
         } catch(error) {
             throw error;

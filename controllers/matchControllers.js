@@ -24,7 +24,7 @@ const createMatch = async (req, res, next) => {
             
         }
         // return status
-        res.status(201).json({message: "Matchees created successfully", Info: creationInfo});
+        res.status(200).json({Info: creationInfo});
         
     } catch(error) {
         next(error);
@@ -75,7 +75,8 @@ const getMatchByTargetId = async (req, res, next) => {
     try{
         const targetId = req.params.id;
         // preference is an object in an array that is nested in another array
-        const [match, _] = await Match.findByTargetId(targetId);
+        const [[match], _] = await Match.findByTargetId(targetId);
+
 
         res.status(200).json({Match: match});
     } catch(error) {
