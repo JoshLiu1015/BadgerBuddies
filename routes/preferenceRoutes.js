@@ -14,9 +14,9 @@ router
     .patch(authControllers.authenticateToken, preferenceControllers.updatePreference)
     .delete(authControllers.authenticateToken, preferenceControllers.deletePreference);
 
-    router
-    .route("/userId/:id")
-    .get(authControllers.authenticateToken, preferenceControllers.getPreferenceByUserId);
-    
-    
-    module.exports = router;
+router
+.route("/userId/:id")
+.get(authControllers.authenticateToken, preferenceControllers.getPreferenceByUserId);
+
+
+module.exports = router;

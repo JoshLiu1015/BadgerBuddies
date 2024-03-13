@@ -22,6 +22,10 @@ const updatePreference = async (req, res, next) => {
         const updateData = req.body;
         const [info, _] = await Preference.update(preferenceId, updateData);
 
+        if (info.affectedRows === 0) {
+            return res.status(404).json({ message: "Preference not found" });
+        }
+
         res.status(200).json({Info: info});
 
     } catch(error) {
