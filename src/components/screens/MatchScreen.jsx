@@ -28,7 +28,7 @@ const MatchScreen = () => {
 
             const json = await res.json();
             if (json && json.Match) {
-                // alert(JSON.stringify(json.Match));
+                // alert(JSON.stringify(json.Match[0]));
                 setMatchedUsers(json.Match);
                 setIsMatched(true);
             }
@@ -70,22 +70,73 @@ const MatchScreen = () => {
     }
   }
 
-  const handleAccept = () => {
-    // Handle the accept action
-    setCurrentIndex(currentIndex + 1);
+  const handleAccept = async (matchId) => {
+    try {
+        const token = await SecureStore.getItemAsync(secureStoreEmail);
+        // const res = await fetch(`http://10.140.172.174:3000/match/matchId/${matchId}`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "isMatchAccepted": 1
+            })
+        })
 
-    if (currentIndex === matchedUsers.length-1) {        
-        setIsMatched(false);
+        
+        if (res.status === 404) {
+            alert("Match not found");
+        }
+        else if (res.status == 200) {
+            alert("Your have accepted the user");
+        }
+
+        // Handle the accept action
+        setCurrentIndex(currentIndex + 1);
+
+        if (currentIndex === matchedUsers.length-1) {        
+            setIsMatched(false);
+        }
+    } catch (error) {
+        console.error("Error during 'Accept': ", error);
     }
+    
   };
 
-  const handleReject = () => {
-    // Handle the reject action
-    setCurrentIndex(currentIndex + 1);
+  const handleReject = async (matchId) => {
+    try {
+        const token = await SecureStore.getItemAsync(secureStoreEmail);
+        // const res = await fetch(`http://10.140.172.174:3000/match/matchId/${matchId}`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/matchId/100`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "isMatchDeclined": 1
+            })
+        })
 
-    if (currentIndex === matchedUsers.length-1) {        
-        setIsMatched(false);
+        
+        if (res.status === 404) {
+            alert("Match not found");
+        }
+        else if (res.status == 200) {
+            alert("Your have rejected the user");
+        }
+        // Handle the reject action
+        setCurrentIndex(currentIndex + 1);
+
+        if (currentIndex === matchedUsers.length-1) {        
+            setIsMatched(false);
+        }
+    } catch (error) {
+        console.error("Error during 'Reject': ", error);
     }
+    
 
   };
 
@@ -103,10 +154,10 @@ const MatchScreen = () => {
             }
             return (
             <UserScreen
-                key={matchedUser.id}
+                key={matchedUser.matchId}
                 user={matchedUser}
-                onAccept={handleAccept}
-                onReject={handleReject}
+                onAccept={() => handleAccept(matchedUser.matchId)}
+                onReject={() => handleReject(matchedUser.matchId)}
             />
             );
         }).reverse() // Reverse the array to ensure the next user is
