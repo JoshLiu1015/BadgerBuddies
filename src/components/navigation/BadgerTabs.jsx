@@ -8,6 +8,7 @@ import InfoStack from "./InfoStack";
 import { useState } from 'react';
 import MatchScreen from '../screens/MatchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import PreferenceScreen from '../screens/PreferenceScreen';
 
 
 
@@ -20,6 +21,7 @@ function BadgerTabs() {
     return <>
         <BottomTab.Navigator>
             <BottomTab.Screen name="Profile" component={ProfileScreen} options={{headerShown: false}}/>
+            <BottomTab.Screen name="Preference" component={PreferenceScreen} options={{headerShown: false}}/>
             <BottomTab.Screen name="Match" component={MatchScreen} options={{headerShown: false}}/>
             {/* <BottomTab.Screen name="Preferences" component={BadgerPreferencesScreen}/> */}
         </BottomTab.Navigator>

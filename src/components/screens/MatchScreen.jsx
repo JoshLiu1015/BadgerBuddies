@@ -17,29 +17,45 @@ const MatchScreen = () => {
   useEffect(() => {
     // Call the API to fetch users and set the state
     const fetchUsers = async () => {
+        try {
+            const token = await SecureStore.getItemAsync(secureStoreEmail);
 
-        const token = await SecureStore.getItemAsync(secureStoreEmail);
+            const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            });
 
-        const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            }});
+            if (res.status == 200) {
+                // alert("Successfully fetched users");
 
-            const json = await res.json();
-            if (json && json.Match) {
-                // alert(JSON.stringify(json.Match[0]));
-                setMatchedUsers(json.Match);
-                setIsMatched(true);
+                const json = await res.json();
+                if (json && json.Match) {
+                    // alert(JSON.stringify(json.Match[0]));
+                    setMatchedUsers(json.Match);
+                    // enable user cards if there are still matches in the Matches table 
+                    // that have not been accecpted or rejected
+                    setIsMatched(true);
+                }
+            } else {
+                alert("Failed to fetch users");
             }
-        };
+
+            
+        } catch (error) {
+            console.error("Error during matching: ", error);
+        }
+
+        
+    };
 
     fetchUsers();
-  }, []);
+  }, [isMatched]);
 
 
 
-
+  // find potential matches and add to Matches table
   const handleMatch = async () => {
     try {
         const token = await SecureStore.getItemAsync(secureStoreEmail);
@@ -56,6 +72,7 @@ const MatchScreen = () => {
         if (json && json.Info.length > 0) {
             if (res.status === 200) {
                 alert("Matches are created");
+                // if there are matches, set setIsMatched to true to enable user cards
                 setIsMatched(true);
             }
         }
@@ -91,14 +108,16 @@ const MatchScreen = () => {
         }
         else if (res.status == 200) {
             alert("Your have accepted the user");
+
+             // Handle the accept action
+            setCurrentIndex(currentIndex + 1);
+
+            if (currentIndex === matchedUsers.length-1) {        
+                setIsMatched(false);
+            }
         }
 
-        // Handle the accept action
-        setCurrentIndex(currentIndex + 1);
-
-        if (currentIndex === matchedUsers.length-1) {        
-            setIsMatched(false);
-        }
+       
     } catch (error) {
         console.error("Error during 'Accept': ", error);
     }
@@ -109,7 +128,7 @@ const MatchScreen = () => {
     try {
         const token = await SecureStore.getItemAsync(secureStoreEmail);
         // const res = await fetch(`http://10.140.172.174:3000/match/matchId/${matchId}`, {
-        const res = await fetch(`http://192.168.1.168:3000/match/matchId/100`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
             method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -126,13 +145,14 @@ const MatchScreen = () => {
         }
         else if (res.status == 200) {
             alert("Your have rejected the user");
-        }
-        // Handle the reject action
-        setCurrentIndex(currentIndex + 1);
+            // Handle the reject action
+            setCurrentIndex(currentIndex + 1);
 
-        if (currentIndex === matchedUsers.length-1) {        
-            setIsMatched(false);
+            if (currentIndex === matchedUsers.length-1) {        
+                setIsMatched(false);
+            }
         }
+        
     } catch (error) {
         console.error("Error during 'Reject': ", error);
     }

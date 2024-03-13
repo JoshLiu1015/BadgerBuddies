@@ -25,6 +25,8 @@ const ProfileScreen = (props) => {
     const [editHeight, setEditHeight] = useState(null);
 
     const [userInfo, setUserInfo] = useState({});
+    const userInfoArray = [userInfo.firstName, userInfo.lastName, userInfo.gender, userInfo.major, userInfo.grade, userInfo.weight, userInfo.height];
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const [setIsLoggedIn, userId, secureStoreEmail, _, setUserGender] = useContext(BadgerBuddiesContext);
@@ -33,50 +35,48 @@ const ProfileScreen = (props) => {
     const editSetVals = [setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditGrade, setEditWeight, setEditHeight];
     const editTitles = ["First name", "Last name", "Gender", "Major", "Grade", "Weight", "Height"];
 
-    const userInfoArray = [userInfo.firstName, userInfo.lastName, userInfo.gender, userInfo.major, userInfo.grade, userInfo.weight, userInfo.height];
+   
     const bodyTitles = ["firstName", "lastName", "gender", "major", "grade", "weight", "height"];
 
     const [isUpdated, setIsUpdated] = useState(false);
 
     useEffect(() => {
-        // alert(userId);
-        // fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
-        fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`);
 
-        }).then(res => {
-            // alert(res.status);
-            if (res.status === 200) {
-                return res.json()
-            } else {
+                if (res.status == 200) {
+                    // alert("Successfully fetched the user");
 
-        }}).then(json => {
-        // alert(json.User.id);
-        if (json && json.User) {
-            // user info is an object
-            setUserInfo(json.User);
+                    const json = await res.json();
+                    if (json && json.User) {
+                        // user info is an object
+                        setUserInfo(json.User);
 
-            // set these variables to see the differences after users edit profiles
-            setEditFirstName(json.User.firstName);
-            setEditLastName(json.User.lastName);
-            setEditGender(json.User.gender);
-            setEditMajor(json.User.major);
-            setEditGrade(json.User.grade);
-            setEditWeight(json.User.weight);
-            setEditHeight(json.User.height);
-            // alert(typeof json.User.height === 'number');
+                        // set these variables to see the differences after users edit profiles
+                        setEditFirstName(json.User.firstName);
+                        setEditLastName(json.User.lastName);
+                        setEditGender(json.User.gender);
+                        setEditMajor(json.User.major);
+                        setEditGrade(json.User.grade);
+                        setEditWeight(json.User.weight);
+                        setEditHeight(json.User.height);
+                        // alert(typeof json.User.height === 'number');
 
-            // when updated data is fetched, set the bool back to false
-            // so it can be set to true again when next update
-            setIsUpdated(false);
+                        // when updated data is fetched, set the bool back to false
+                        // so it can be set to true again when next update
+                        setIsUpdated(false);
+                    }
 
-        } else {
-
+                } else {
+                    alert("Failed to fetch the user");
+                }
+                
+            } catch (error) {
+                console.error("Error during matching: ", error);
+            }
         }
-            
-        }).catch(error => {
-            alert("An error occurred: " + error.message);
-            console.error("An error occurred:", error);
-        });
+        fetchUser();
     }, [userId, isUpdated])
 
 
@@ -94,6 +94,9 @@ const ProfileScreen = (props) => {
                     // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
                     if (bodyTitles[i] === "gender") {
                         setUserGender(val);
+                        // TODO: update the male column in Preferences as well
+
+                        
                     }
                     // create a new json body containing all changes
                     body[bodyTitles[i]] = val;
