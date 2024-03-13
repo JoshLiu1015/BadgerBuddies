@@ -88,9 +88,12 @@ class Match {
     }
 
     static findByRequesterId(id) {
-        let sql = `SELECT * FROM Matches m, Users u
+        let sql = `SELECT m.id AS matchId, u.id AS userId, m.*, u.*
+            FROM Matches m, Users u
             WHERE m.targetId = u.id
-            AND m.requesterId = ?`;
+            AND m.requesterId = ?
+            AND NOT (m.isMatchAccepted = 1
+                OR m.isMatchDeclined = 1)`;
 
         return db.execute(sql, [id]);
     }

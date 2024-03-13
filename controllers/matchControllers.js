@@ -35,7 +35,24 @@ const updateMatch = async (req, res, next) => {
     try {
         const matchId = req.params.id;
         const updateData = req.body;
+        console.log(updateData);
         const [info, _] = await Match.update(matchId, updateData);
+
+
+        // Example of info when match not found
+        
+        // ResultSetHeader {
+        //     fieldCount: 0,
+        //     affectedRows: 0,
+        //     insertId: 0,
+        //     info: 'Rows matched: 0  Changed: 0  Warnings: 0',
+        //     serverStatus: 2,
+        //     warningStatus: 0,
+        //     changedRows: 0
+        // }
+        if (info.affectedRows === 0) {
+            return res.status(404).json({ message: "Match not found" });
+        }
 
         res.status(200).json({Info: info});
 
