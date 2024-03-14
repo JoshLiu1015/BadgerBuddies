@@ -18,7 +18,8 @@ function BadgerBuddies(props) {
     const [userId, setUserId] = useState(0);
     const [secureStoreEmail, setSecureStoreEmail] = useState("");
     const [userFirstName, setUserFirstName] = useState("");
-    const [userGender, setUserGender] = useState("");
+
+    const [preferenceId, setPreferenceId] = useState("");
 
 
 
@@ -59,7 +60,6 @@ function BadgerBuddies(props) {
                     // set user info for screens
                     // setUserEmail(json.User.email);
                     setUserFirstName(json.User.firstName);
-                    setUserGender(json.User.gender);
                     setUserId(json.User.id);
                     // alert(userId)
                     const updatedSecureStoreEmail = json.User.email.replace("@", "");
@@ -140,7 +140,7 @@ function BadgerBuddies(props) {
 
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, userGender, setUserGender]}>
+            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>

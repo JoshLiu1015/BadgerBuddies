@@ -59,7 +59,8 @@ function PersonalInfoScreen(props) {
                         {titles.map((title, index) => {
                             if (title === "Gender" || title === "Grade") {
 
-                                const [items, setItems] = useState(options[index]);
+                                // create items for drop down menus
+                                const items = options[index];
 
                                 return <View key={index} style={{ marginBottom: 20 }}>
                                     <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
@@ -99,176 +100,61 @@ function PersonalInfoScreen(props) {
                         </View>
                     </View>    
                         
-                        {/* <TouchableOpacity style={styles.imageUpload}>
-                            <Image 
-                            // source={{ uri: 'path_to_default_image' }} 
-                            style={styles.image} 
-                            />
-                            <Text>Upload Image</Text>
+                       
 
+                    {/* TODO: Handle the cases when email, names, majors, weight, height too long */}
+                    <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
+                        <TouchableOpacity style={styles.editButton} onPress={() => {
+
+                            if (email === "" || email.length > 240)
+                            alert("Please enter a valid email address.");
+                            else if (password === "" || password.length < 8 || password.length > 128)
+                                alert("The password must be between 8 and 128 characters.");
+                            else if (confirmPassword === "")
+                                alert("Please enter your confirm password")
+                            else if (password !== confirmPassword)
+                                alert("Passwords do not match")
+                            else if (firstName === "" || firstName.length > 100)
+                                alert("Please enter a valid first name")
+                            // last name can be null
+                            else if (lastName.length > 100)
+                                alert("Please enter a valid last name")
+                            else if (gender === "") {
+                                alert("Please enter your gender")
+                            }
+                            else if (major === "")
+                                alert("Please enter your major")
+                            else if (grade === "")
+                                alert("Please enter your grade")
+                            // else if (weight === "")
+                            //     alert("Please enter your weight")
+                            else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
+                                alert("Please enter a valid number for your weight")
+                            // else if (height === "")
+                            //     alert("Please enter your height")
+                            else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
+                                alert("Please enter a valid number for your height")
+                            else{
+                                navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
+                                gender: gender, major: major, grade: grade, weight: weight, height: height, picture: picture});
+                                // props.onScreenChange('BadgerTabs');
+
+                                // props.handleSignup(email, password, firstName, lastName, gender, major, grade, weight, height, picture);
+
+                            }
+                        }}>
+                            <Text style={styles.editButtonText}>Next</Text>
                         </TouchableOpacity>
-                        <View style={styles.container}>
-                            <TextInput
-                                placeholder='Email'
-                                style={styles.input}
-                                onChangeText={setEmail}
-                                value={email}
-                            />
-                            <TextInput
-                                placeholder='Password'
-                                style={styles.input}
-                                onChangeText={setPassword}
-                                value={password}
-                                secureTextEntry={true}
-                            />
-                            <TextInput
-                                placeholder='Confirm Password'
-                                style={styles.input}
-                                onChangeText={setConfirmPassword}
-                                value={confirmPassword}
-                                secureTextEntry={true}
-                            />
-                            <TextInput
-                                placeholder="First Name"
-                                style={styles.input}
-                                onChangeText={setFirstName}
-                                value={firstName}
-                            />
-                            <TextInput
-                                placeholder="Last Name"
-                                style={styles.input}
-                                onChangeText={setLastName}
-                                value={lastName}
-                            />
-                            <TextInput
-                                placeholder="Gender"
-                                style={styles.input}
-                                onChangeText={setGender}
-                                value={gender}
-                            />
-                            <TextInput
-                                placeholder="Major"
-                                style={styles.input}
-                                onChangeText={setMajor}
-                                value={major}
-                            />
-                            <TextInput
-                                placeholder="Grade"
-                                style={styles.input}
-                                onChangeText={setGrade}
-                                value={grade}
-                            />
-                            <TextInput
-                                placeholder="Weight"
-                                style={styles.input}
-                                onChangeText={setWeight}
-                                value={weight}
-                            />
-                            <TextInput
-                                placeholder="Height"
-                                style={styles.input}
-                                onChangeText={setHeight}
-                                value={height}
-                            />
-                            
-                        </View> */}
-                        
-                        {/* <View style={{borderWidth: 1, margin: 15, marginHorizontal: 115}}>
-                            <Button title="Create Account" onPress={goToBadgerTabs} />
-                        </View> */}
-                        
+                    </View>
 
-                        {/* TODO: Handle the cases when email, names, majors, weight, height too long */}
-                        <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
-                            <TouchableOpacity style={styles.editButton} onPress={() => {
 
-                                if (email === "" || email.length > 240)
-                                alert("Please enter a valid email address.");
-                                else if (password === "" || password.length < 8 || password.length > 128)
-                                    alert("The password must be between 8 and 128 characters.");
-                                else if (confirmPassword === "")
-                                    alert("Please enter your confirm password")
-                                else if (password !== confirmPassword)
-                                    alert("Passwords do not match")
-                                else if (firstName === "" || firstName.length > 100)
-                                    alert("Please enter a valid first name")
-                                // last name can be null
-                                else if (lastName.length > 100)
-                                    alert("Please enter a valid last name")
-                                else if (gender === "") {
-                                    alert("Please enter your gender")
-                                }
-                                else if (major === "")
-                                    alert("Please enter your major")
-                                else if (grade === "")
-                                    alert("Please enter your grade")
-                                // else if (weight === "")
-                                //     alert("Please enter your weight")
-                                else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
-                                    alert("Please enter a valid number for your weight")
-                                // else if (height === "")
-                                //     alert("Please enter your height")
-                                else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
-                                    alert("Please enter a valid number for your height")
-                                else{
-                                    navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
-                                    gender: gender, major: major, grade: grade, weight: weight, height: height, picture: picture});
-                                    // props.onScreenChange('BadgerTabs');
 
-                                    // props.handleSignup(email, password, firstName, lastName, gender, major, grade, weight, height, picture);
+                    <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
 
-                                }
-                            }}>
-                                <Text style={styles.editButtonText}>Next</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                            {/* <Button color="crimson" title="Next" onPress={() => {
-                                if (email === "" || email.length > 240)
-                                alert("Please enter a valid email address.");
-                                else if (password === "" || password.length < 8 || password.length > 128)
-                                    alert("The password must be between 8 and 128 characters.");
-                                else if (confirmPassword === "")
-                                    alert("Please enter your confirm password")
-                                else if (password !== confirmPassword)
-                                    alert("Passwords do not match")
-                                else if (firstName === "" || firstName.length > 100)
-                                    alert("Please enter a valid first name")
-                                // last name can be null
-                                else if (lastName.length > 100)
-                                    alert("Please enter a valid last name")
-                                else if (gender === "")
-                                    alert("Please enter your gender")
-                                else if (major === "")
-                                    alert("Please enter your major")
-                                else if (grade === "")
-                                    alert("Please enter your grade")
-                                // else if (weight === "")
-                                //     alert("Please enter your weight")
-                                else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
-                                    alert("Please enter a valid number for your weight")
-                                // else if (height === "")
-                                //     alert("Please enter your height")
-                                else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
-                                    alert("Please enter a valid number for your height")
-                                else{
-                                    navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
-                                    gender: gender, major: major, grade: grade, weight: weight, height: height, picture: picture});
-                                    // props.onScreenChange('BadgerTabs');
-
-                                    // props.handleSignup(email, password, firstName, lastName, gender, major, grade, weight, height, picture);
-
-                                }
-
-                            }} />
-                        </View> */}
-
-                        <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
-
-                            <Button color="grey" title="Go back" onPress={() => {
-                                setIsRegistered(false);
-                            }} />
-                        </View>
+                        <Button color="grey" title="Go back" onPress={() => {
+                            setIsRegistered(false);
+                        }} />
+                    </View>
                         
                 </View>
             </TouchableWithoutFeedback>

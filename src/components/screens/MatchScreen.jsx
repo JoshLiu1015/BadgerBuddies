@@ -12,7 +12,7 @@ const MatchScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMatched, setIsMatched] = useState(false);
 
-  const [setIsLoggedIn, userId, secureStoreEmail, _, setUserGender] = useContext(BadgerBuddiesContext);
+  const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
 
   useEffect(() => {
     // Call the API to fetch users and set the state
@@ -26,12 +26,14 @@ const MatchScreen = () => {
                     "Authorization": `Bearer ${token}`,
                 }
             });
-
+            
             if (res.status == 200) {
                 // alert("Successfully fetched users");
-
+               
                 const json = await res.json();
-                if (json && json.Match) {
+                // if matches are found
+                if (json && json.Match[0]) {
+                    // alert(json.Match[0] === undefined);
                     // alert(JSON.stringify(json.Match[0]));
                     setMatchedUsers(json.Match);
                     // enable user cards if there are still matches in the Matches table 

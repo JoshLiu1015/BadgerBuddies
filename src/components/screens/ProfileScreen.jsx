@@ -2,6 +2,7 @@ import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView,
 import { useState, useEffect, useContext, React } from 'react';
 import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
 import * as SecureStore from 'expo-secure-store';
+import RNPickerSelect from 'react-native-picker-select';
 
 
 
@@ -29,7 +30,7 @@ const ProfileScreen = (props) => {
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [setIsLoggedIn, userId, secureStoreEmail, _, setUserGender] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId] = useContext(BadgerBuddiesContext);
 
     const editVals = [editFirstName, editLastName, editGender, editMajor, editGrade, editWeight, editHeight];
     const editSetVals = [setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditGrade, setEditWeight, setEditHeight];
@@ -39,6 +40,12 @@ const ProfileScreen = (props) => {
     const bodyTitles = ["firstName", "lastName", "gender", "major", "grade", "weight", "height"];
 
     const [isUpdated, setIsUpdated] = useState(false);
+
+    const options = [null, null, [{label: "Male", value: "male"}, {label: "Female", value: "female"},
+        {label: "Other", value: "other"}], null, [{label: "Freshman", value: "freshman"},
+        {label: "Sophomore", value: "sophomore"}, {label: "Junior", value: "junior"},
+        {label: "Senior", value: "senior"}, {label: "Graduate", value: "graduate"}, 
+        {label: "PHD", value: "phd"}, {label: "Other", value: "other"}], null, null];
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -80,6 +87,33 @@ const ProfileScreen = (props) => {
     }, [userId, isUpdated])
 
 
+    const handleGenderInPreference = async () => {
+        try {
+            alert("preferenceid: " + preferenceId);
+            const token = await SecureStore.getItemAsync(secureStoreEmail);
+
+            const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceId}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "userGender": editGender
+                })
+            })
+
+            if (res.status === 404) {
+                alert("User not found");
+            }
+            else if (res.status == 200) {
+                alert("Your update was successful");
+            }
+        } catch (error) {
+            console.error("Error during login: ", error);
+        }
+    }
+
     // when users edit their profiles
     const onEditPress = async () => {
         try {
@@ -93,10 +127,11 @@ const ProfileScreen = (props) => {
                     // the gender state variable in the BudgerBuddies screen should be updated
                     // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
                     if (bodyTitles[i] === "gender") {
-                        setUserGender(val);
-                        // TODO: update the male column in Preferences as well
+                        // update the gender column in Preferences as well
+                        handleGenderInPreference();
 
-                        
+
+
                     }
                     // create a new json body containing all changes
                     body[bodyTitles[i]] = val;
@@ -140,14 +175,6 @@ const ProfileScreen = (props) => {
     
 
     function handleLoggedOut() {
-        // if (isRegistered) {
-        //     setIsRegistered(false);
-        //     handleScreenChange("PersonalInfo");
-        //     setIsRegistering(false);
-        // }
-        // else if (isLoggedIn) {
-        //     setIsLoggedIn(false);
-        // }
         SecureStore.deleteItemAsync(secureStoreEmail);
         setIsLoggedIn(false);
     }
@@ -169,7 +196,7 @@ const ProfileScreen = (props) => {
         </ScrollView>
         </View>
 
-        <View style={{ flexDirection: "row", marginTop: 15 }}>
+        <View style={{ flexDirection: "row", marginBottom: 15 }}>
             <View style={{ justifyContent: "center" }}>
                 <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
                     <Text style={styles.editButtonText}>Edit</Text>
@@ -196,18 +223,38 @@ const ProfileScreen = (props) => {
                         <View style={styles.modalOverlay}>
                             <View style={styles.modalContent}>
                                 <Text style={styles.modalTitle}>Edit Profile</Text>
-                                {editVals.map((val, i) => {
-                                    if (typeof val === 'number') {
-                                        val = String(val);
+                                {editTitles.map((title, index) => {
+                                    if (title === "Gender" || title === "Grade") {
+                                        // create items for drop down menus
+                                        const items = options[index];
+
+                                        return <View key={index} style={{ marginBottom: 20 }}>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                            <RNPickerSelect
+                                                onValueChange={(value) => editSetVals[index](value)}
+                                                items={items}
+                                                style={pickerSelectStyles}
+                                                useNativeAndroidPickerStyle={false}
+                                                value={editVals[index]}
+                                                placeholder={{ label: "Select", value: "" }}
+                                            />
+                                        </View>
                                     }
-                                    return <View key={i}>
-                                        <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[i]}</Text>
-                                        <TextInput
-                                            style={styles.modalInput}
-                                            onChangeText={editSetVals[i]}
-                                            value={val}
-                                        />
-                                    </View>
+
+                                    // if (typeof val === 'number') {
+                                    //     val = String(val);
+                                    // }
+                                    else {
+                                        return <View key={index}>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                            <TextInput
+                                                style={styles.modalInput}
+                                                onChangeText={editSetVals[index]}
+                                                value={editVals[index]}
+                                            />
+                                        </View>
+                                    }
+                                    
                                 })}
                                 
 
@@ -291,6 +338,29 @@ const styles = StyleSheet.create({
         padding: 10
     },
   });
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+});
 
 
 export default ProfileScreen;

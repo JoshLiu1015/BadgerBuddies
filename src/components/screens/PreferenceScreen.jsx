@@ -30,7 +30,7 @@ function PreferenceScreen(props) {
     const setEditVals = [setExercise, null, setLocation, setUserLevel, setPartnerLevel, setPartnerGender, setExerciseDetails];
 
 
-    const [setIsLoggedIn, userId, secureStoreEmail, _, setUserGender] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId] = useContext(BadgerBuddiesContext);
 
     const bodyTitles = ["exercise", "time", "location", "userLevel", "partnerLevel", "partnerGender", "exerciseDetails"];
     /*
@@ -79,6 +79,13 @@ function PreferenceScreen(props) {
                         setPreferenceInfo(json.Preference);
                         // alert(JSON.stringify(json.Preference));
                         // setIsUpdated(false);
+
+
+                        // set preference id so it will be updated in useContext
+                        // then when gender is altered in ProfileScreen, 
+                        // we can use preference id to patch the row
+                        setPreferenceId(json.Preference.id);
+                        
                         setExercise(json.Preference.exercise);
                         setDate(new Date(json.Preference.time));
                         setLocation(json.Preference.location);
@@ -151,7 +158,7 @@ function PreferenceScreen(props) {
                 alert("User not found");
             }
             else if (res.status == 200) {
-                // alert("Your update was successful");
+                alert("Your update was successful");
             }
         } catch (error) {
             console.error("Error during saving preferences: ", error);
