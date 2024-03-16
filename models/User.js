@@ -3,9 +3,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 class User {
-    constructor(email, password, firstName, lastName, gender, major, grade, weight, height, picture) {{
+    constructor(email, password, firstName, lastName, gender, major, year, weight, height, picture, aboutMe) {{
 
-        console.log("User password: ", password);
+        // console.log("User password: ", password);
+
+        
         this.email = email;
 
         // Do not store the password directly.
@@ -21,7 +23,7 @@ class User {
         this.lastName = lastName;
         this.gender = gender;
         this.major = major;
-        this.grade = grade;
+        this.year = year;
         this.weight = weight;
         this.height = height;
 
@@ -32,6 +34,7 @@ class User {
         and then saving the path or URL to the image in your user model/database.
         */
         this.picture = picture;
+        this.aboutMe = aboutMe;
 
         // 0 means false, 1 means true
         this.isEmailVerified = 0;
@@ -66,10 +69,11 @@ class User {
             lastName,
             gender,
             major,
-            grade,
+            year,
             weight,
             height,
             picture,
+            aboutMe,
             isEmailVerified,
             emailVerificationToken,
             createTime
@@ -78,13 +82,14 @@ class User {
             '${this.email}',
             '${this.passwordHash}',
             '${this.firstName}',
-            ${this.lastName ? `'${this.lastName}'` : 'NULL'},
+            '${this.lastName}',
             '${this.gender}',
-            '${this.major}',
-            '${this.grade}',
+            '${this.major ? `'${this.major}'` : 'NULL'}',
+            '${this.year}',
             ${this.weight ? `'${this.weight}'` : 'NULL'}, 
             ${this.height ? `'${this.height}'` : 'NULL'},
             ${this.picture ? `'${this.picture}'` : 'NULL'},
+            ${this.aboutMe ? `'${this.aboutMe}'` : 'NULL'},
             '${this.isEmailVerified}',
             '${this.emailVerificationToken}',
             '${createTime}'

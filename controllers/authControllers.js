@@ -44,7 +44,8 @@ const verifyEmail = async (req, res, next) => {
         // find the user based on the email
         const [[user], _] = await User.findByEmail(email);
 
-        console.log("user: ", user);
+        // console.log("user: ", user);
+        
         // if the user isn't found based on the email
         if (!user) {
             res.status(400).send("Can't find the user. Please make sure it is the same email address as you registered!");

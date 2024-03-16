@@ -8,13 +8,13 @@ const { sendVerificationEmail } = require("./authControllers");
 const createNewUser = async (req, res, next) => {
     try {
         const {email, password, firstName, lastName,
-            gender, major, grade, weight, height,
-            picture} = req.body;
+            gender, major, year, weight, height,
+            picture, aboutMe} = req.body;
         
         const user = new User(email, password, firstName,
-            lastName, gender, major, grade, weight, height,
-            picture)
-        console.log("userControlllers password: ", password);
+            lastName, gender, major, year, weight, height,
+            picture, aboutMe)
+        // console.log("userControlllers password: ", password);
 
         await user.setPassword(password);
         
@@ -65,38 +65,6 @@ const createNewUser = async (req, res, next) => {
     }
 }
 
-
-// const loginHelper = async (email) => {
-//     try {
-//         // user is an object in an array that is nested in another array
-//         const [[user], _] = await User.findByEmail(email);
-
-//         // if the user is found
-//         if (user && user.isEmailVerified) {
-
-//             // define a payload
-//             const payload = { id: user.id, email: user.email };
-//             // generate JWT (Json Web Token), which will be send back to the client
-//             // When a new request comes in after the client has logged in,
-//             // the token given to the client will be verified to check 
-//             // authorization header of incoming requests 
-//             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h'});
-
-//             return token;
-            
-//         }
-//         else if (!user) {
-//             // if the user isn't found
-//             throw new Error("user not found")
-//         }
-//         else if (!user.isEmailVerified) {
-//             throw new Error("email not verified");
-//         }
-
-//     } catch(error) {
-//         throw error;
-//     }
-// }
 
 
 const updateUser = async (req, res, next) => {
