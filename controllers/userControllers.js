@@ -9,11 +9,11 @@ const createNewUser = async (req, res, next) => {
     try {
         const {email, password, firstName, lastName,
             gender, major, year, weight, height,
-            picture, aboutMe} = req.body;
+            pictures, aboutMe} = req.body;
         
         const user = new User(email, password, firstName,
             lastName, gender, major, year, weight, height,
-            picture, aboutMe)
+            pictures, aboutMe)
         // console.log("userControlllers password: ", password);
 
         await user.setPassword(password);

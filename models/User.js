@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 class User {
-    constructor(email, password, firstName, lastName, gender, major, year, weight, height, picture, aboutMe) {{
+    constructor(email, password, firstName, lastName, gender, major, year, weight, height, pictures, aboutMe) {{
 
         // console.log("User password: ", password);
 
-        
+
         this.email = email;
 
         // Do not store the password directly.
@@ -27,13 +27,8 @@ class User {
         this.weight = weight;
         this.height = height;
 
-        /*
-        Store Images as Files and Save the Path in the Database
-        Storing the actual image files in a file system 
-        (either on the server or through a cloud storage service)
-        and then saving the path or URL to the image in your user model/database.
-        */
-        this.picture = picture;
+
+        this.pictures = pictures;
         this.aboutMe = aboutMe;
 
         // 0 means false, 1 means true
@@ -43,6 +38,7 @@ class User {
 
     }}
 
+    // this function is called in userControllers
     async setPassword(password) {
         this.passwordHash = await bcrypt.hash(password, saltRounds);
     }
@@ -72,7 +68,7 @@ class User {
             year,
             weight,
             height,
-            picture,
+            pictures,
             aboutMe,
             isEmailVerified,
             emailVerificationToken,
@@ -88,7 +84,7 @@ class User {
             '${this.year}',
             ${this.weight ? `'${this.weight}'` : 'NULL'}, 
             ${this.height ? `'${this.height}'` : 'NULL'},
-            ${this.picture ? `'${this.picture}'` : 'NULL'},
+            ${this.pictures ? `'${this.pictures}'` : 'NULL'},
             ${this.aboutMe ? `'${this.aboutMe}'` : 'NULL'},
             '${this.isEmailVerified}',
             '${this.emailVerificationToken}',
