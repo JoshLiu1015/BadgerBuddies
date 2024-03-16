@@ -19,7 +19,7 @@ const ProfileScreen = (props) => {
 
     // const [userPhoto, setUserPhoto] = useState(require('../../../assets/swan.webp'));
 
-    const [images, setImages] = useState(Array(6).fill(null));
+    const [editPictures, setEditPictures] = useState(Array(6).fill(null));
 
     // const addNewPhoto = (newPhotoUri) => {
     //     setUserPhotos([...userPhotos, newPhotoUri]);
@@ -46,7 +46,7 @@ const ProfileScreen = (props) => {
         
             if (!result.canceled) {
                 // alert(result.assets[0].uri)
-                setImages(oldArray => {
+                setEditPictures(oldArray => {
                     const newArray = [...oldArray];
                     newArray[index] = { uri: result.assets[0].uri };
                     return newArray;
@@ -81,7 +81,7 @@ const ProfileScreen = (props) => {
     const editTitles = ["About Me", "First name", "Last name", "Gender", "Major", "Year", "Weight", "Height"];
 
    
-    const bodyTitles = ["aboutMe", "firstName", "lastName", "gender", "major", "year", "weight", "height"];
+    const bodyTitles = ["pictures", "aboutMe", "firstName", "lastName", "gender", "major", "year", "weight", "height"];
 
     const [isUpdated, setIsUpdated] = useState(false);
 
@@ -90,6 +90,9 @@ const ProfileScreen = (props) => {
         {label: "Sophomore", value: "sophomore"}, {label: "Junior", value: "junior"},
         {label: "Senior", value: "senior"}, {label: "Graduate", value: "graduate"}, 
         {label: "PHD", value: "phd"}, {label: "Other", value: "other"}], null, null];
+
+
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -101,18 +104,41 @@ const ProfileScreen = (props) => {
 
                     const json = await res.json();
                     if (json && json.User) {
+                        if (json.User.aboutMe === null)
+                            json.User.aboutMe = "";
+                        if (json.User.major === "NULL")
+                            json.User.major = "";
+                        if (json.User.weight === null)
+                            json.User.weight = "";
+                        if (json.User.height === null)
+                            json.User.height = "";
+                        if (json.User.pictures === null)
+                            json.User.pictures = Array(6).fill(null);
                         // user info is an object
                         setUserInfo(json.User);
+
+                        // alert(JSON.stringify(json.User));
 
                         // set these variables to see the differences after users edit profiles
                         setEditFirstName(json.User.firstName);
                         setEditLastName(json.User.lastName);
                         setEditGender(json.User.gender);
+                        
+                        
+
                         setEditMajor(json.User.major);
+
                         setEditYear(json.User.year);
+
+                        
                         setEditWeight(json.User.weight);
                         setEditHeight(json.User.height);
                         setEditAboutMe(json.User.aboutMe);
+
+                        // alert(json.User.pictures === null);
+                        // alert(JSON.stringify(json.User.pictures));
+                        setEditPictures(json.User.pictures);
+                        
                         // alert(typeof json.User.height === 'number');
 
                         // when updated data is fetched, set the bool back to false
@@ -244,12 +270,10 @@ const ProfileScreen = (props) => {
                 <Image source={{uri: userPhoto}} style={styles.photo} />
             </TouchableOpacity> */}
             <View style={{ height: 200, marginBottom: 30 }}>
-                <CarouselScreen data={images} />
+                <CarouselScreen data={editPictures} />
             </View>
             
-            
-            { userInfo.lastName === null ? <Text style={styles.greeting}>Hi! {userInfo.firstName}</Text> :
-            <Text style={styles.greeting}>Hi! {userInfo.firstName} {userInfo.lastName}</Text> }
+            <Text style={styles.greeting}>Hi! {userInfo.firstName} {userInfo.lastName}</Text>
         </View>
 
         <ScrollView>
@@ -297,14 +321,15 @@ const ProfileScreen = (props) => {
                             <View style={styles.modalContent}>
                                 <Text style={styles.modalTitle}>Edit Profile</Text>
 
+                                <Text style={{fontWeight: 'bold', marginBottom: 10}}>Pictures</Text>
                                 {/* flexWrap is used to prevent placeholders overflow */}
                                 <View style={{ justifyContent: 'center', flexDirection: "row", flexWrap: 'wrap' }}>
-                                
-                                    {images.map((image, index) => (
+                                    
+                                {editPictures.map((picture, index) => (
                                         // this is the View for each placeholder
                                         <View key={index} style={{ margin: 12, width: 120, height: 120, justifyContent: 'center', alignItems: 'center' }}>
                                         
-                                        {image === null ? <>
+                                        {picture === null ? <>
                                         {/* display empty placeholders if element is null */}
                                             <View style={{ width: '100%', height: '100%', backgroundColor: '#eaeaea', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: 'black' }}>Empty</Text>
@@ -319,7 +344,7 @@ const ProfileScreen = (props) => {
                                         // if any elemeent in the array isn't null, render the photo
                                         <>
                                             <View key={index} style={{ margin: 0 }}>
-                                                <Image source={image} style={{ width: 110, height: 110 }} />
+                                                <Image source={picture} style={{ width: 110, height: 110 }} />
                                             </View>
                                             {/* pass index to selectPhotoTapped, so the function knows which placeholder it will replace
                                             by using the index to assign a new value in the images array */}
@@ -331,7 +356,6 @@ const ProfileScreen = (props) => {
                                         </View>
                                         
                                     ))}
-                                    
                                     
                                 </View>
 
@@ -354,6 +378,7 @@ const ProfileScreen = (props) => {
                                                 items={items}
                                                 style={pickerSelectStyles}
                                                 useNativeAndroidPickerStyle={false}
+                                                // if val is null, change it to ""
                                                 value={val}
                                                 placeholder={{ label: "Select", value: "" }}
                                             />

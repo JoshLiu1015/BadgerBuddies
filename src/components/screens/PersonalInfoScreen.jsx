@@ -22,7 +22,7 @@ function PersonalInfoScreen(props) {
     const [year, setYear] = useState("");
     const [weight, setWeight] = useState("");
     const [height, setHeight] = useState("");
-    const [picture, setPicture] = useState("this is a picture url");
+    const [pictures, setPictures] = useState(Array(6).fill(null));
     const [aboutMe, setAboutMe] = useState("");
 
     const titles = ["Email", "Password", "Confirm Password", "First Name", "Last Name", "Gender", "Year"];
@@ -46,14 +46,6 @@ function PersonalInfoScreen(props) {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={styles.overlay}>
                     <View style={styles.content}>
-                        {/* <TouchableOpacity style={styles.imageUpload}>
-                            <Image 
-                            // source={{ uri: 'path_to_default_image' }} 
-                            style={styles.image} 
-                            />
-                            <Text>Upload Image</Text>
-
-                        </TouchableOpacity> */}
 
 
                         <View style={styles.container}>      
@@ -142,8 +134,9 @@ function PersonalInfoScreen(props) {
                             // else if (aboutMe === "")
                             //     alert("Please enter about you");
                             else{
+                                // alert(JSON.stringify(pictures))
                                 navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
-                                gender: gender, major: major, year: year, weight: weight, height: height, picture: picture, aboutMe: aboutMe});
+                                gender: gender, major: major, year: year, weight: weight, height: height, pictures: pictures, aboutMe: aboutMe});
                                 // props.onScreenChange('BadgerTabs');
 
                                 // props.handleSignup(email, password, firstName, lastName, gender, major, year, weight, height, picture);

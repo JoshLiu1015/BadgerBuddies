@@ -189,7 +189,7 @@ function MatchInfoScreen(props) {
                                     // this will call the handleSignup function in BadgerBuddies screen
                                     const newUserId = await handleSignup(props.route.params.email, props.route.params.password, props.route.params.firstName, props.route.params.lastName,
                                         props.route.params.gender, props.route.params.major, props.route.params.year, props.route.params.weight,
-                                        props.route.params.height, props.route.params.picture, props.route.params.aboutMe);
+                                        props.route.params.height, props.route.params.pictures, props.route.params.aboutMe);
                                     
                                     // alert("new user id: " + newUserId);
                                     handleSubmit(newUserId);
