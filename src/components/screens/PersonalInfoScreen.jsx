@@ -19,21 +19,22 @@ function PersonalInfoScreen(props) {
     const [lastName, setLastName] = useState("");
     const [gender, setGender] = useState("");
     const [major, setMajor] = useState("");
-    const [grade, setGrade] = useState("");
+    const [year, setYear] = useState("");
     const [weight, setWeight] = useState("");
     const [height, setHeight] = useState("");
     const [picture, setPicture] = useState("this is a picture url");
+    const [aboutMe, setAboutMe] = useState("");
 
-    const titles = ["Email", "Password", "Confirm Password", "First Name", "Last Name", "Gender", "Major", "Grade", "Weight", "Height"];
-    const vals = [email, password, confirmPassword, firstName, lastName, gender, major, grade, weight, height];
-    const setVals = [setEmail, setPassword, setConfirmPassword, setFirstName, setLastName, setGender, setMajor, setGrade, setWeight, setHeight];
+    const titles = ["Email", "Password", "Confirm Password", "First Name", "Last Name", "Gender", "Year"];
+    const vals = [email, password, confirmPassword, firstName, lastName, gender, year];
+    const setVals = [setEmail, setPassword, setConfirmPassword, setFirstName, setLastName, setGender, setYear];
 
     const options = [null, null, null, null, null, 
     [{label: "Male", value: "male"}, {label: "Female", value: "female"},
-    {label: "Other", value: "other"}], null, [{label: "Freshman", value: "freshman"},
+    {label: "Other", value: "other"}], [{label: "Freshman", value: "freshman"},
     {label: "Sophomore", value: "sophomore"}, {label: "Junior", value: "junior"},
     {label: "Senior", value: "senior"}, {label: "Graduate", value: "graduate"}, 
-    {label: "PHD", value: "phd"}, {label: "Other", value: "other"}], null, null];
+    {label: "PHD", value: "phd"}, {label: "Other", value: "other"}]];
     
     const navigation = useNavigation();
 
@@ -45,19 +46,19 @@ function PersonalInfoScreen(props) {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={styles.overlay}>
                     <View style={styles.content}>
-                        <TouchableOpacity style={styles.imageUpload}>
+                        {/* <TouchableOpacity style={styles.imageUpload}>
                             <Image 
                             // source={{ uri: 'path_to_default_image' }} 
                             style={styles.image} 
                             />
                             <Text>Upload Image</Text>
 
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
 
                         <View style={styles.container}>      
                         {titles.map((title, index) => {
-                            if (title === "Gender" || title === "Grade") {
+                            if (title === "Gender" || title === "Year") {
 
                                 // create items for drop down menus
                                 const items = options[index];
@@ -116,30 +117,36 @@ function PersonalInfoScreen(props) {
                                 alert("Passwords do not match")
                             else if (firstName === "" || firstName.length > 100)
                                 alert("Please enter a valid first name")
-                            // last name can be null
-                            else if (lastName.length > 100)
+                            
+                            else if (lastName === "" || lastName.length > 100)
                                 alert("Please enter a valid last name")
                             else if (gender === "") {
                                 alert("Please enter your gender")
                             }
-                            else if (major === "")
-                                alert("Please enter your major")
-                            else if (grade === "")
-                                alert("Please enter your grade")
+                            // else if (major === "")
+                            //     alert("Please enter your major")
+                            else if (year === "")
+                                alert("Please enter your year")
                             // else if (weight === "")
                             //     alert("Please enter your weight")
-                            else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
-                                alert("Please enter a valid number for your weight")
-                            // else if (height === "")
-                            //     alert("Please enter your height")
-                            else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
-                                alert("Please enter a valid number for your height")
+
+                            // else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
+                            //     alert("Please enter a valid number for your weight")
+
+                            // // else if (height === "")
+                            // //     alert("Please enter your height")
+
+                            // else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
+                            //     alert("Please enter a valid number for your height")
+
+                            // else if (aboutMe === "")
+                            //     alert("Please enter about you");
                             else{
                                 navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
-                                gender: gender, major: major, grade: grade, weight: weight, height: height, picture: picture});
+                                gender: gender, major: major, year: year, weight: weight, height: height, picture: picture, aboutMe: aboutMe});
                                 // props.onScreenChange('BadgerTabs');
 
-                                // props.handleSignup(email, password, firstName, lastName, gender, major, grade, weight, height, picture);
+                                // props.handleSignup(email, password, firstName, lastName, gender, major, year, weight, height, picture);
 
                             }
                         }}>

@@ -80,7 +80,7 @@ function BadgerBuddies(props) {
 
 
     // signup function that is called in BadgerRegisterScreen
-    const handleSignup = async (email, password, firstName, lastName, gender, major, grade, weight, height, picture) => {
+    const handleSignup = async (email, password, firstName, lastName, gender, major, year, weight, height, picture, aboutMe) => {
         try {
             // const res = await fetch("http://10.140.172.174:3000/user", {
             const res = await fetch("http://192.168.1.168:3000/user", {
@@ -95,10 +95,11 @@ function BadgerBuddies(props) {
                     "lastName": lastName,
                     "gender": gender,
                     "major": major,
-                    "grade": grade,
+                    "year": year,
                     "weight": parseInt(weight, 10),
                     "height": parseInt(height, 10),
-                    "picture": picture
+                    "picture": picture,
+                    "aboutMe": aboutMe
                 })
             })
 
