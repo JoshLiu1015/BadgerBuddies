@@ -5,8 +5,8 @@ import { View, Image, Dimensions } from 'react-native';
 const width = Dimensions.get('window').width;
 
 const CarouselScreen = ({ data }) => {
-    // if the first element of data is null
-    if (data[0] === null) {
+    // if the after after filtering out null is empty, return the default image
+    if (data.filter((item) => item != null).length === 0) {
         return <Image
             source={require('../../../assets/swan.webp')}
             style={{ width: width, height: 200 }}
@@ -20,21 +20,17 @@ const CarouselScreen = ({ data }) => {
         <Carousel
         loop
         width={width}
+        height={width/2}
         // data is the array of {uri: image.uri}
-        data={data} 
+        data={data.filter((item) => item != null)} 
+        // how fast to swipe to next pic
+        scrollAnimationDuration={1000}
         // item here is each object in the array
         renderItem={({ item, index }) => {
             // Check if element is null, and if so, render the default image
             if (item === null) {
                 // return nothing
                 return
-                // return (
-                //     <Image
-                //         source={require('../../../assets/swan.webp')}
-                //         style={{ width: width, height: 200 }}
-                //         resizeMode="contain"
-                //     />
-                // );
             }
 
             // Otherwise, render the image from `data`

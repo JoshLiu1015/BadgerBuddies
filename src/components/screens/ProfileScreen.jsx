@@ -27,7 +27,7 @@ const ProfileScreen = (props) => {
       
 
 
-    const selectPhotoTapped = async (index) => {
+    const selectPhotoAdd = async (index) => {
         try {
             // You may need to ask for permissions before opening the image picker
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -58,6 +58,14 @@ const ProfileScreen = (props) => {
         
     };
 
+    const selectPhotoDelete = async (index) => {
+        setEditPictures(oldArray => {
+            const newArray = [...oldArray];
+            newArray[index] = null;
+            return newArray;
+        });
+    }
+
 
 
     const [editFirstName, setEditFirstName] = useState("");
@@ -65,8 +73,8 @@ const ProfileScreen = (props) => {
     const [editGender, setEditGender] = useState("");
     const [editMajor, setEditMajor] = useState("");
     const [editYear, setEditYear] = useState("");
-    const [editWeight, setEditWeight] = useState(null);
-    const [editHeight, setEditHeight] = useState(null);
+    const [editWeight, setEditWeight] = useState("");
+    const [editHeight, setEditHeight] = useState("");
     const [editAboutMe, setEditAboutMe] = useState("");
 
     const [userInfo, setUserInfo] = useState({});
@@ -81,7 +89,7 @@ const ProfileScreen = (props) => {
     const editTitles = ["About Me", "First name", "Last name", "Gender", "Major", "Year", "Weight", "Height"];
 
    
-    const bodyTitles = ["pictures", "aboutMe", "firstName", "lastName", "gender", "major", "year", "weight", "height"];
+    const bodyTitles = ["aboutMe", "firstName", "lastName", "gender", "major", "year", "weight", "height"];
 
     const [isUpdated, setIsUpdated] = useState(false);
 
@@ -190,11 +198,11 @@ const ProfileScreen = (props) => {
         try {
 
             // if users don't enter numbers for weight or height
-            if (isNaN(parseInt(editWeight, 10)) || parseInt(editWeight, 10) > 1000)
+            if (editWeight !== "" && (isNaN(parseInt(editWeight, 10)) || parseInt(editWeight, 10) > 1000))
                 alert("Please enter a valid number for your weight")
             
 
-            else if (isNaN(parseInt(editHeight, 10)) || parseInt(editHeight, 10) > 1000)
+            else if (editHeight !== "" && (isNaN(parseInt(editHeight, 10)) || parseInt(editHeight, 10) > 1000))
                 alert("Please enter a valid number for your height")
 
 
@@ -202,14 +210,19 @@ const ProfileScreen = (props) => {
             else {
                 let body = {};
 
+                // handle pictures separately, because pictures not in editVals
+                if (editPictures !== userInfo.pictures) {
+                    body["pictures"] = editPictures;
+                }
+
                 // loop through every values in the screen
-                editVals.forEach((val, i) => {
+                editVals.forEach((val, index) => {
                     // if the data is different from last time it was fetched
-                    if (val !== userInfoArray[i]) {
+                    if (val !== userInfoArray[index]) {
                         // if users changed their genders,
                         // the gender state variable in the BudgerBuddies screen should be updated
                         // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
-                        if (bodyTitles[i] === "gender") {
+                        if (bodyTitles[index] === "gender") {
                             // update the gender column in Preferences as well
                             handleGenderInPreference();
 
@@ -217,7 +230,7 @@ const ProfileScreen = (props) => {
 
                         }
                         // create a new json body containing all changes
-                        body[bodyTitles[i]] = val;
+                        body[bodyTitles[index]] = val;
                     }
                 })
                 
@@ -255,6 +268,18 @@ const ProfileScreen = (props) => {
     }
 
     function onCancelPress() {
+        // handle pictures separately, because pictures not in editVals
+        if (editPictures !== userInfo.pictures) {
+            setEditPictures(userInfo.pictures);
+        }
+
+        editVals.forEach((val, index) => {
+            // if the data is different from last time it was fetched
+            if (val !== userInfoArray[index]) {
+                // change it back to its previous value
+                editSetVals[index](userInfoArray[index]);
+            }
+        })
         setModalVisible(false);
     }
     
@@ -334,9 +359,14 @@ const ProfileScreen = (props) => {
                                             <View style={{ width: '100%', height: '100%', backgroundColor: '#eaeaea', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: 'black' }}>Empty</Text>
                                             </View>
-                                            <TouchableOpacity onPress={() => selectPhotoTapped(index)}>
-                                                <Text style={{ color: 'blue' }}>Add Photo</Text>
-                                            </TouchableOpacity>
+                                            <View style={{ justifyContent: 'center', flexDirection: "row", flexWrap: 'wrap' }}>
+                                                <TouchableOpacity onPress={() => selectPhotoAdd(index)}>
+                                                    <Text style={{ color: 'blue' }}>Add Photo</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={() => selectPhotoDelete(index)}>
+                                                    <Text style={{ color: 'blue', marginLeft: 10 }}>Delete</Text>
+                                                </TouchableOpacity>
+                                            </View>
            
                                         </>
                                         
@@ -348,9 +378,14 @@ const ProfileScreen = (props) => {
                                             </View>
                                             {/* pass index to selectPhotoTapped, so the function knows which placeholder it will replace
                                             by using the index to assign a new value in the images array */}
-                                            <TouchableOpacity onPress={() => selectPhotoTapped(index)}>
-                                                <Text style={{ color: 'blue' }}>Add Photo</Text>
-                                            </TouchableOpacity>
+                                            <View style={{ justifyContent: 'center', flexDirection: "row", flexWrap: 'wrap' }}>
+                                                <TouchableOpacity onPress={() => selectPhotoAdd(index)}>
+                                                    <Text style={{ color: 'blue' }}>Add Photo</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={() => selectPhotoDelete(index)}>
+                                                    <Text style={{ color: 'blue', marginLeft: 10 }}>Delete</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                         </>
                                         }
                                         </View>
