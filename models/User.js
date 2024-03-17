@@ -115,7 +115,7 @@ class User {
                 value = await bcrypt.hash(value, saltRounds);
             }
             
-            // emailVerificationToken can be null
+            // only emailVerificationToken can be updated from some value to null
             if (key === "emailVerificationToken") {
                 updates.push(`${key} = ?`);
                 params.push(value);
