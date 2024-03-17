@@ -115,31 +115,15 @@ function PersonalInfoScreen(props) {
                             else if (gender === "") {
                                 alert("Please enter your gender")
                             }
-                            // else if (major === "")
-                            //     alert("Please enter your major")
+
                             else if (year === "")
                                 alert("Please enter your year")
-                            // else if (weight === "")
-                            //     alert("Please enter your weight")
 
-                            // else if (weight !== "" && (isNaN(parseInt(weight, 10)) || parseInt(weight, 10) > 1000))
-                            //     alert("Please enter a valid number for your weight")
-
-                            // // else if (height === "")
-                            // //     alert("Please enter your height")
-
-                            // else if (height !== "" && (isNaN(parseInt(height, 10)) || parseInt(height, 10) > 1000))
-                            //     alert("Please enter a valid number for your height")
-
-                            // else if (aboutMe === "")
-                            //     alert("Please enter about you");
                             else{
                                 // alert(JSON.stringify(pictures))
                                 navigation.push("Preferences", {email: email, password: password, firstName: firstName, lastName: lastName, 
                                 gender: gender, major: major, year: year, weight: weight, height: height, pictures: pictures, aboutMe: aboutMe});
-                                // props.onScreenChange('BadgerTabs');
 
-                                // props.handleSignup(email, password, firstName, lastName, gender, major, year, weight, height, picture);
 
                             }
                         }}>

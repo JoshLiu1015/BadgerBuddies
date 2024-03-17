@@ -93,11 +93,44 @@ const ProfileScreen = (props) => {
 
     const [isUpdated, setIsUpdated] = useState(false);
 
+
+    const heightOptionsFeetInches = [];
+    for (let feet = 4; feet <= 7; feet++) {
+        for (let inch = 0; inch < 12; inch++) {
+            const label = `${feet}'${inch}"`;
+            const value = `${feet * 12 + inch}`; // Convert feet and inches to total inches 
+            heightOptionsFeetInches.push({ label, value });
+        }
+    }
+
     const options = [null, null, null, [{label: "Male", value: "male"}, {label: "Female", value: "female"},
         {label: "Other", value: "other"}], null, [{label: "Freshman", value: "freshman"},
         {label: "Sophomore", value: "sophomore"}, {label: "Junior", value: "junior"},
         {label: "Senior", value: "senior"}, {label: "Graduate", value: "graduate"}, 
-        {label: "PHD", value: "phd"}, {label: "Other", value: "other"}], null, null];
+        {label: "PHD", value: "phd"}, {label: "Other", value: "other"}], 
+        [Array.from({ length: 600 }, (_, i) => ({ label: `${i + 60} lb`, value: `${i + 60}` })), Array.from({ length: 270 }, (_, i) => ({ label: `${i + 30} kg`, value: `${i + 30 }`}))],
+        [heightOptionsFeetInches, Array.from({ length: 200 }, (_, i) => ({ label: `${i + 100} cm`, value: `${i + 100 }`}))]];
+
+
+    
+
+    const [weightMetric, setWeightMetric] = useState("lb"); // default value
+    const [heightMetric, setHeightMetric] = useState("ft/in"); // default value
+
+    const weightOptions = [
+        { label: "lb", value: "lb" },
+        { label: "kg", value: "kg" }
+    ];
+
+    const heightOptions = [
+        { label: "ft/in", value: "ft/in" },
+        { label: "cm", value: "cm" }
+    ];
+
+
+    
+
+
 
 
 
@@ -298,7 +331,25 @@ const ProfileScreen = (props) => {
                 <CarouselScreen data={editPictures} />
             </View>
             
-            <Text style={styles.greeting}>Hi! {userInfo.firstName} {userInfo.lastName}</Text>
+            
+            <View style={{ flexDirection: "row" }}>
+                <Text style={styles.greeting}>Hi! {userInfo.firstName} {userInfo.lastName}</Text>
+                <View style={{marginLeft: 10}}>
+                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={() => {
+                        weightMetric === "lb" ? setWeightMetric("kg") :setWeightMetric("lb")
+                    }}>
+                        <Text style={styles.editButtonText}>{weightMetric}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{marginLeft: 10}}>
+                    
+                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={() => {
+                        heightMetric === "ft/in" ? setHeightMetric("cm") :setHeightMetric("ft/in")
+                    }}>
+                        <Text style={styles.editButtonText}>{heightMetric}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
 
         <ScrollView>
@@ -332,7 +383,7 @@ const ProfileScreen = (props) => {
 
         
         <View>
-        
+            
             <Modal
                 transparent={true}
                 visible={modalVisible}
@@ -393,6 +444,9 @@ const ProfileScreen = (props) => {
                                     ))}
                                     
                                 </View>
+                                
+                                
+
 
                                 {editVals.map((val, index) => {
                                     // convert the values of weight and height to String
@@ -413,10 +467,44 @@ const ProfileScreen = (props) => {
                                                 items={items}
                                                 style={pickerSelectStyles}
                                                 useNativeAndroidPickerStyle={false}
-                                                // if val is null, change it to ""
                                                 value={val}
                                                 placeholder={{ label: "Select", value: "" }}
                                             />
+                                        </View>
+                                    }
+
+                                    else if (editTitles[index] === "Weight" || editTitles[index] === "Height") {
+                                        // create items for drop down menus
+                                        const items = options[index];
+
+                                        return <View key={index} style={{ marginBottom: 20 }}>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text>
+                                           {/* <View style={{ flexDirection: "row" }}>
+                                                <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text>
+                                                <View style={{marginLeft: 10}}>
+                                                    <RNPickerSelect
+                                                        onValueChange={editTitles[index] === "Weight" ? setWeightMetric : setHeightMetric}
+                                                        items={editTitles[index] === "Weight" ? weightOptions : heightOptions}
+                                                        style={pickerSelectStylesMetrics}
+                                                        useNativeAndroidPickerStyle={false}
+                                                        value={editTitles[index] === "Weight" ? weightMetric : heightMetric}
+                                                    />
+                                                </View>
+                                            </View> */}
+
+                                            
+                                            <RNPickerSelect
+                                                onValueChange={editSetVals[index]}
+                                                // if it is for weight, check if weightMetric is "ib", if yes, display values for lb
+                                                // if it is for height, check if heightMetric is "ft/in", if yes, diesplay values for ft/in
+                                                items={editTitles[index] === "Weight" ? weightMetric === "lb" ? items[0] : items[1] : heightMetric === "ft/in" ? items[0] : items[1]}
+                                                style={pickerSelectStyles}
+                                                useNativeAndroidPickerStyle={false}
+                                                value={val}
+                                                placeholder={{ label: "Select", value: "" }}
+                                            />
+                                                
+                                            
                                         </View>
                                     }
 
@@ -555,6 +643,32 @@ const pickerSelectStyles = StyleSheet.create({
         borderRadius: 8,
         color: 'black',
         paddingRight: 30, // to ensure the text is never behind the icon
+    },
+});
+
+
+const pickerSelectStylesMetrics = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 5,
+        paddingHorizontal: 5,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'white',
+        backgroundColor: "red",
+        backgroundColor: "blue"
+        
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'white',
+        backgroundColor: "blue"
     },
 });
 
