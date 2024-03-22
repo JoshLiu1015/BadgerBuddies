@@ -17,16 +17,11 @@ const ProfileScreen = (props) => {
         </View>
     );
 
-    // const [userPhoto, setUserPhoto] = useState(require('../../../assets/swan.webp'));
 
     const [editPictures, setEditPictures] = useState(Array(6).fill(null));
 
-    // const addNewPhoto = (newPhotoUri) => {
-    //     setUserPhotos([...userPhotos, newPhotoUri]);
-    //   };
+
       
-
-
     const selectPhotoAdd = async (index) => {
         try {
             // You may need to ask for permissions before opening the image picker
@@ -73,10 +68,11 @@ const ProfileScreen = (props) => {
     const [editGender, setEditGender] = useState("");
     const [editMajor, setEditMajor] = useState("");
     const [editYear, setEditYear] = useState("");
-    const [editWeight, setEditWeight] = useState("");
-    const [editHeight, setEditHeight] = useState("");
+    const [editWeight, setEditWeight] = useState(0);
+    const [editHeight, setEditHeight] = useState(0);
     const [editAboutMe, setEditAboutMe] = useState("");
 
+    // userInfoArray is used to compare to edited values in editVals
     const [userInfo, setUserInfo] = useState({});
     const userInfoArray = [userInfo.aboutMe, userInfo.firstName, userInfo.lastName, userInfo.gender, userInfo.major, userInfo.year, userInfo.weight, userInfo.height];
 
@@ -90,6 +86,7 @@ const ProfileScreen = (props) => {
 
    
     const bodyTitles = ["aboutMe", "firstName", "lastName", "gender", "major", "year", "weight", "height"];
+
 
     const [isUpdated, setIsUpdated] = useState(false);
 
@@ -117,24 +114,33 @@ const ProfileScreen = (props) => {
     const [weightMetric, setWeightMetric] = useState("lb"); // default value
     const [heightMetric, setHeightMetric] = useState("ft/in"); // default value
 
-    const weightOptions = [
-        { label: "lb", value: "lb" },
-        { label: "kg", value: "kg" }
-    ];
+    // create a state variable to store the value of weight in kg and height in cm
+    const [editWeightKg, setEditWeightKg] = useState(0);
+    const [editHeightCm, setEditHeightCm] = useState(0);
 
-    const heightOptions = [
-        { label: "ft/in", value: "ft/in" },
-        { label: "cm", value: "cm" }
-    ];
+
+    // const weightOptions = [
+    //     { label: "lb", value: "lb" },
+    //     { label: "kg", value: "kg" }
+    // ];
+
+    // const heightOptions = [
+    //     { label: "ft/in", value: "ft/in" },
+    //     { label: "cm", value: "cm" }
+    // ];
+
+    // function to convert inches to feet and inches
+    const inchesToFeetInches = (inches) => {
+        const feet = Math.floor(inches / 12);
+        const inch = inches % 12;
+        return `${feet}'${inch}"`;
+    }
 
 
     
 
 
-
-
-
-
+    // fetch user data from the database
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -144,15 +150,18 @@ const ProfileScreen = (props) => {
                     // alert("Successfully fetched the user");
 
                     const json = await res.json();
+                    // convert null values to empty strings or 0
+                    // because null values can't be displayed in RNPickSelect
                     if (json && json.User) {
                         if (json.User.aboutMe === null)
                             json.User.aboutMe = "";
                         if (json.User.major === "NULL")
                             json.User.major = "";
                         if (json.User.weight === null)
-                            json.User.weight = "";
+                            json.User.weight = 0;
+
                         if (json.User.height === null)
-                            json.User.height = "";
+                            json.User.height = 0;
                         if (json.User.pictures === null)
                             json.User.pictures = Array(6).fill(null);
                         // user info is an object
@@ -173,7 +182,13 @@ const ProfileScreen = (props) => {
 
                         
                         setEditWeight(json.User.weight);
+                        // convert the weight value to kg
+                        setEditWeightKg(Math.round(json.User.weight * 0.453592));
+
                         setEditHeight(json.User.height);
+                        // convert the height value to cm
+                        setEditHeightCm(Math.round(json.User.height * 2.54));
+
                         setEditAboutMe(json.User.aboutMe);
 
                         // alert(json.User.pictures === null);
@@ -199,6 +214,8 @@ const ProfileScreen = (props) => {
     }, [userId, isUpdated])
 
 
+
+    // if users change their gender, the Preferences table should be updated as well
     const handleGenderInPreference = async () => {
         try {
             alert("preferenceid: " + preferenceId);
@@ -226,71 +243,72 @@ const ProfileScreen = (props) => {
         }
     }
 
+
+
     // when users edit their profiles
     const onEditPress = async () => {
         try {
+            let body = {};
 
-            // if users don't enter numbers for weight or height
-            if (editWeight !== "" && (isNaN(parseInt(editWeight, 10)) || parseInt(editWeight, 10) > 1000))
-                alert("Please enter a valid number for your weight")
-            
+            // handle pictures separately, because pictures not in editVals
+            if (editPictures !== userInfo.pictures) {
+                body["pictures"] = editPictures;
+            }
 
-            else if (editHeight !== "" && (isNaN(parseInt(editHeight, 10)) || parseInt(editHeight, 10) > 1000))
-                alert("Please enter a valid number for your height")
+            // loop through every values in the screen
+            editVals.forEach((val, index) => {
 
+                // if the title is weight and the weight is in kg
+                if (weightMetric === "kg" && bodyTitles[index] === "weight") {
+                    // convert editWeightKg to lb for comparison
+                    // since the values in userInfoArray are in lb
+                    val = editWeightKg * 2.20462;
 
-
-            else {
-                let body = {};
-
-                // handle pictures separately, because pictures not in editVals
-                if (editPictures !== userInfo.pictures) {
-                    body["pictures"] = editPictures;
+                    
+                }
+                // if the title is height and the height is in cm
+                if (heightMetric === "cm" && bodyTitles[index] === "height") {
+                    // convert editHeightCm to inches for comparison
+                    val = editHeightCm / 2.54;
                 }
 
-                // loop through every values in the screen
-                editVals.forEach((val, index) => {
-                    // if the data is different from last time it was fetched
-                    if (val !== userInfoArray[index]) {
-                        // if users changed their genders,
-                        // the gender state variable in the BudgerBuddies screen should be updated
-                        // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
-                        if (bodyTitles[index] === "gender") {
-                            // update the gender column in Preferences as well
-                            handleGenderInPreference();
-
-
-
-                        }
-                        // create a new json body containing all changes
-                        body[bodyTitles[index]] = val;
+                // if the data is different from last time it was fetched
+                if (val !== userInfoArray[index]) {
+                    // if users changed their genders,
+                    // the gender state variable in the BudgerBuddies screen should be updated
+                    // so when MatchInfoScreen uses the gender from useContext, it will have up to date value 
+                    if (bodyTitles[index] === "gender") {
+                        // update the gender column in Preferences as well
+                        handleGenderInPreference();
                     }
-                })
-                
-                // alert(userId);
-                const token = await SecureStore.getItemAsync(secureStoreEmail);
-                // const res = await fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
-                const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(body)
-                })
-
-                
-                if (res.status === 404) {
-                    alert("User not found");
+                    // create a new json body containing all changes
+                    body[bodyTitles[index]] = val;
                 }
-                else if (res.status == 200) {
-                    alert("Your update was successful");
+            })
+            
+            // alert(userId);
+            const token = await SecureStore.getItemAsync(secureStoreEmail);
+            // const res = await fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
+            const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
 
-                    // after updating the database, set the bool value
-                    // so it will triger useEffect to fetch new data
-                    setIsUpdated(true);
-                    setModalVisible(false);
-                }
+            
+            if (res.status === 404) {
+                alert("User not found");
+            }
+            else if (res.status == 200) {
+                alert("Your update was successful");
+
+                // after updating the database, set the bool value
+                // so it will triger useEffect to fetch new data
+                setIsUpdated(true);
+                setModalVisible(false);
             }
             
         } catch (error) {
@@ -300,6 +318,8 @@ const ProfileScreen = (props) => {
         
     }
 
+
+    // whhen users press cancel button on the edit menu, set the values back to the original values
     function onCancelPress() {
         // handle pictures separately, because pictures not in editVals
         if (editPictures !== userInfo.pictures) {
@@ -322,6 +342,45 @@ const ProfileScreen = (props) => {
         setIsLoggedIn(false);
     }
 
+
+
+    // handle weight button
+    const handleWeightMetric = () => {
+        if (weightMetric === "lb") {
+            // if the weight is in lb, change it to kg
+            setWeightMetric("kg");
+            // // convert the weight value to kg
+            // setEditWeight(Math.round(editWeight * 0.453592));
+
+        }
+        else {
+            // if the weight is in kg, change it to lb
+            setWeightMetric("lb");
+            // // convert the weight value to lb first
+            // setEditWeight(Math.round(editWeight * 2.20462));
+
+        }
+    }
+
+    // handle height button
+    const handleHeightMetric = () => {
+        if (heightMetric === "ft/in") {
+            // if the height is in ft/in, change it to cm
+            setHeightMetric("cm");
+            // // convert the height value to cm first
+            // setEditHeight(Math.round(editHeight * 2.54));
+        }
+        else {
+            // if the height is in cm, change it to ft/in
+            setHeightMetric("ft/in");
+            // // convert the height value to ft/in first
+            // setEditHeight(Math.round(editHeight) / 2.54);
+
+        }
+    }
+        
+
+    // render the screen
     return <View style={styles.container}>
         <View style={[styles.overlay, {paddingTop: 50}]}>
             {/* <TouchableOpacity onPress={selectPhotoTapped}>
@@ -335,17 +394,13 @@ const ProfileScreen = (props) => {
             <View style={{ flexDirection: "row" }}>
                 <Text style={styles.greeting}>Hi! {userInfo.firstName} {userInfo.lastName}</Text>
                 <View style={{marginLeft: 10}}>
-                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={() => {
-                        weightMetric === "lb" ? setWeightMetric("kg") :setWeightMetric("lb")
-                    }}>
+                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={handleWeightMetric}>
                         <Text style={styles.editButtonText}>{weightMetric}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{marginLeft: 10}}>
                     
-                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={() => {
-                        heightMetric === "ft/in" ? setHeightMetric("cm") :setHeightMetric("ft/in")
-                    }}>
+                    <TouchableOpacity style={{backgroundColor: 'gray',padding: 5, borderRadius: 5,}} onPress={handleHeightMetric}>
                         <Text style={styles.editButtonText}>{heightMetric}</Text>
                     </TouchableOpacity>
                 </View>
@@ -358,8 +413,8 @@ const ProfileScreen = (props) => {
                 <UserInfoRow label="Gender" value={userInfo.gender} />
                 <UserInfoRow label="Major" value={userInfo.major} />
                 <UserInfoRow label="Year" value={userInfo.year} />
-                <UserInfoRow label="Weight" value={userInfo.weight} />
-                <UserInfoRow label="Height" value={userInfo.height} />
+                <UserInfoRow label="Weight" value={weightMetric === "lb" ? String(userInfo.weight) + " lb" : String(editWeightKg) + " kg"} />
+                <UserInfoRow label="Height" value={heightMetric === "ft/in" ? inchesToFeetInches(userInfo.height) : String(editHeightCm) + " cm"} />
                 
 
                 <View style={{ flexDirection: "row", marginBottom: 15 }}>
@@ -478,29 +533,17 @@ const ProfileScreen = (props) => {
                                         const items = options[index];
 
                                         return <View key={index} style={{ marginBottom: 20 }}>
-                                            <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text>
-                                           {/* <View style={{ flexDirection: "row" }}>
-                                                <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text>
-                                                <View style={{marginLeft: 10}}>
-                                                    <RNPickerSelect
-                                                        onValueChange={editTitles[index] === "Weight" ? setWeightMetric : setHeightMetric}
-                                                        items={editTitles[index] === "Weight" ? weightOptions : heightOptions}
-                                                        style={pickerSelectStylesMetrics}
-                                                        useNativeAndroidPickerStyle={false}
-                                                        value={editTitles[index] === "Weight" ? weightMetric : heightMetric}
-                                                    />
-                                                </View>
-                                            </View> */}
-
-                                            
+                                            <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text> 
                                             <RNPickerSelect
-                                                onValueChange={editSetVals[index]}
+                                                // if it is for weight, check if weightMetric is "ib", if yes, call setEditWeigh, if not, call setEditWeightKg
+                                                // if it is for height, check if heightMetric is "ft/in", if yes, call setEditHeight, if not, call setEditHeightCm
+                                                onValueChange={editTitles[index] === "Weight" ? (weightMetric === "lb" ? editSetVals[index] : setEditWeightKg) : (heightMetric === "ft/in" ? editSetVals[index] : setEditHeightCm)}
                                                 // if it is for weight, check if weightMetric is "ib", if yes, display values for lb
                                                 // if it is for height, check if heightMetric is "ft/in", if yes, diesplay values for ft/in
-                                                items={editTitles[index] === "Weight" ? weightMetric === "lb" ? items[0] : items[1] : heightMetric === "ft/in" ? items[0] : items[1]}
+                                                items={editTitles[index] === "Weight" ? (weightMetric === "lb" ? items[0] : items[1]) : heightMetric === "ft/in" ? items[0] : items[1]}
                                                 style={pickerSelectStyles}
                                                 useNativeAndroidPickerStyle={false}
-                                                value={val}
+                                                value={editTitles[index] === "Weight" ? (weightMetric === "lb" ? val : String(editWeightKg)) : (heightMetric === "ft/in" ? val : String(editHeightCm))}
                                                 placeholder={{ label: "Select", value: "" }}
                                             />
                                                 
