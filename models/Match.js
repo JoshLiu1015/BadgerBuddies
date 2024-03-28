@@ -14,36 +14,62 @@ class Match {
 
 
     save() {
-
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth()+1;
-        let day = date.getDate();
-        
-        let createTime = `${year}-${month}-${day}`;
-
-
         let sql = `
         INSERT INTO Matches (
             requesterId, 
             targetId, 
             isMatchAccepted, 
             isMatchDeclined,
-            isMatchCreated,
-            createTime
+            isMatchCreated
         )
-        VALUE(
-            '${this.requesterId}',
-            '${this.targetId}',
-            '${this.isMatchAccepted}',
-            '${this.isMatchDeclined}',
-            '${this.isMatchCreated}',
-            '${createTime}'
-        )`
+        VALUES (?, ?, ?, ?, ?)
+        `;
 
-        // return a promise
-        return db.execute(sql);
+        return db.execute(sql, [
+            this.requesterId,
+            this.targetId,
+            this.isMatchAccepted,
+            this.isMatchDeclined,
+            this.isMatchCreated
+        ]);
     }
+
+    // save() {
+
+    //     let date = new Date();
+    //     let year = date.getFullYear();
+    //     let month = date.getMonth()+1;
+    //     let day = date.getDate();
+    //     let hours = date.getHours().toString().padStart(2, '0');
+    //     let minutes = date.getMinutes().toString().padStart(2, '0');
+    //     let seconds = date.getSeconds().toString().padStart(2, '0');
+
+    //     let createTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        
+    //     // let createTime = `${year}-${month}-${day}`;
+
+
+    //     let sql = `
+    //     INSERT INTO Matches (
+    //         requesterId, 
+    //         targetId, 
+    //         isMatchAccepted, 
+    //         isMatchDeclined,
+    //         isMatchCreated,
+    //         createTime
+    //     )
+    //     VALUE(
+    //         '${this.requesterId}',
+    //         '${this.targetId}',
+    //         '${this.isMatchAccepted}',
+    //         '${this.isMatchDeclined}',
+    //         '${this.isMatchCreated}',
+    //         '${createTime}'
+    //     )`
+
+    //     // return a promise
+    //     return db.execute(sql);
+    // }
 
 
     static update(id, updateData) {

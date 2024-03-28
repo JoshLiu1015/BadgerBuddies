@@ -49,16 +49,10 @@ class User {
         return randomBytes(20).toString("hex");
     }
     
-    save() {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth()+1;
-        let day = date.getDate();
-        
-        let createTime = `${year}-${month}-${day}`;
 
+    save() {
         let sql = `
-        INSERT INTO Users(
+        INSERT INTO Users (
             email,
             password,
             firstName,
@@ -71,31 +65,76 @@ class User {
             pictures,
             aboutMe,
             isEmailVerified,
-            emailVerificationToken,
-            createTime
+            emailVerificationToken
         )
-        VALUES(
-            '${this.email}',
-            '${this.passwordHash}',
-            '${this.firstName}',
-            '${this.lastName}',
-            '${this.gender}',
-            '${this.major ? `'${this.major}'` : 'NULL'}',
-            '${this.year}',
-            ${this.weight ? `'${this.weight}'` : 'NULL'}, 
-            ${this.height ? `'${this.height}'` : 'NULL'},
-            ${this.pictures ? `'${this.pictures}'` : 'NULL'},
-            ${this.aboutMe ? `'${this.aboutMe}'` : 'NULL'},
-            '${this.isEmailVerified}',
-            '${this.emailVerificationToken}',
-            '${createTime}'
-        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        
-        // return a promise
-        return db.execute(sql);
 
+        return db.execute(sql, [
+            this.email,
+            this.passwordHash,
+            this.firstName,
+            this.lastName,
+            this.gender,
+            this.major,
+            this.year,
+            this.weight,
+            this.height,
+            this.pictures,
+            this.aboutMe,
+            this.isEmailVerified,
+            this.emailVerificationToken
+        ]);
     }
+
+    
+    // save() {
+    //     let date = new Date();
+    //     let year = date.getFullYear();
+    //     let month = date.getMonth()+1;
+    //     let day = date.getDate();
+        
+    //     let createTime = `${year}-${month}-${day}`;
+
+    //     let sql = `
+    //     INSERT INTO Users(
+    //         email,
+    //         password,
+    //         firstName,
+    //         lastName,
+    //         gender,
+    //         major,
+    //         year,
+    //         weight,
+    //         height,
+    //         pictures,
+    //         aboutMe,
+    //         isEmailVerified,
+    //         emailVerificationToken,
+    //         createTime
+    //     )
+    //     VALUES(
+    //         '${this.email}',
+    //         '${this.passwordHash}',
+    //         '${this.firstName}',
+    //         '${this.lastName}',
+    //         '${this.gender}',
+    //         '${this.major ? `'${this.major}'` : 'NULL'}',
+    //         '${this.year}',
+    //         ${this.weight ? `'${this.weight}'` : 'NULL'}, 
+    //         ${this.height ? `'${this.height}'` : 'NULL'},
+    //         ${this.pictures ? `'${this.pictures}'` : 'NULL'},
+    //         ${this.aboutMe ? `'${this.aboutMe}'` : 'NULL'},
+    //         '${this.isEmailVerified}',
+    //         '${this.emailVerificationToken}',
+    //         '${createTime}'
+    //     )
+    //     `;
+        
+    //     // return a promise
+    //     return db.execute(sql);
+
+    // }
 
     static async update(id, updateData) {
         // array used for the sql query
