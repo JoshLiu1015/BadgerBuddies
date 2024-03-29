@@ -8,52 +8,52 @@ import * as SecureStore from 'expo-secure-store';
 
 
 const MatchScreen = () => {
-  const [matchedUsers, setMatchedUsers] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isMatched, setIsMatched] = useState(false);
+    const [matchedUsers, setMatchedUsers] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isMatched, setIsMatched] = useState(false);
 
-  const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
 
-  useEffect(() => {
-    // Call the API to fetch users and set the state
-    const fetchUsers = async () => {
-        try {
-            const token = await SecureStore.getItemAsync(secureStoreEmail);
+    useEffect(() => {
+        // Call the API to fetch users and set the state
+        const fetchUsers = async () => {
+            try {
+                const token = await SecureStore.getItemAsync(secureStoreEmail);
 
-            const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
+                const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
+                
+                if (res.status == 200) {
+                    // alert("Successfully fetched users");
+                
+                    const json = await res.json();
+                    // if matches are found
+                    if (json && json.Match[0]) {
+                        // alert(json.Match[0] === undefined);
+                        // alert(JSON.stringify(json.Match[0]));
+                        setMatchedUsers(json.Match);
+                        // enable user cards if there are still matches in the Matches table 
+                        // that have not been accecpted or rejected
+                        setIsMatched(true);
+                    }
+                } else {
+                    alert("Failed to fetch users");
                 }
-            });
-            
-            if (res.status == 200) {
-                // alert("Successfully fetched users");
-               
-                const json = await res.json();
-                // if matches are found
-                if (json && json.Match[0]) {
-                    // alert(json.Match[0] === undefined);
-                    // alert(JSON.stringify(json.Match[0]));
-                    setMatchedUsers(json.Match);
-                    // enable user cards if there are still matches in the Matches table 
-                    // that have not been accecpted or rejected
-                    setIsMatched(true);
-                }
-            } else {
-                alert("Failed to fetch users");
+
+                
+            } catch (error) {
+                console.error("Error during matching: ", error);
             }
 
             
-        } catch (error) {
-            console.error("Error during matching: ", error);
-        }
+        };
 
-        
-    };
-
-    fetchUsers();
-  }, [isMatched]);
+        fetchUsers();
+    }, [isMatched]);
 
 
 
