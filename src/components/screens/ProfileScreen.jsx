@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import RNPickerSelect from 'react-native-picker-select';
 import * as ImagePicker from 'expo-image-picker';
 import CarouselScreen from './CarouselScreen';
+import io from 'socket.io-client';
 
 
 
@@ -61,7 +62,7 @@ const ProfileScreen = (props) => {
         });
     }
 
-
+    
 
     const [editFirstName, setEditFirstName] = useState("");
     const [editLastName, setEditLastName] = useState("");
@@ -90,6 +91,15 @@ const ProfileScreen = (props) => {
 
     const [isUpdated, setIsUpdated] = useState(false);
 
+
+
+    const socket = io('http://192.168.1.168:3000', {
+        query: {
+            // senderId as a key to store the socket id in the backend
+            userId: userId
+        }
+    });
+    
 
     const heightOptionsFeetInches = [];
     for (let feet = 4; feet <= 7; feet++) {
@@ -340,6 +350,7 @@ const ProfileScreen = (props) => {
     function handleLoggedOut() {
         SecureStore.deleteItemAsync(secureStoreEmail);
         setIsLoggedIn(false);
+        socket.disconnect()
     }
 
 

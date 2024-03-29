@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
+import * as SecureStore from 'expo-secure-store';
 
 const ChatListScreen = ({ onChatSelected }) => {
 
@@ -44,7 +46,8 @@ const ChatListScreen = ({ onChatSelected }) => {
                     const json = await res.json();
                     // if at least one matche is found
                     if (json && json.Match[0]) {
-
+                        // alert(JSON.stringify(json.Match))
+                        // alert(json.Match[0].pictures[0])
                         setMatchedUsers(json.Match);
 
                     }
@@ -64,25 +67,25 @@ const ChatListScreen = ({ onChatSelected }) => {
     }, []);
 
 
-    const renderChatItem = ({ matchedUser }) => (
+    const renderChatItem = ({ item: matchedUser }) => (
         <TouchableOpacity style={styles.chatItem} onPress={() => navigation.push("Chat Room", {requesterId: matchedUser.requesterId, targetId: matchedUser.targetId})}>
-            <Image source={require('../../../assets/swan.webp')} style={styles.chatPhoto} />
+            {matchedUser.pictures[0] !== null ? <Image source={{uri: matchedUser.pictures}} style={styles.chatPhoto} /> : <Image source={require('../../../assets/swan.webp')} style={styles.chatPhoto} />}
             {/* <Image source={{ uri: item.photo }} style={styles.chatPhoto} />  */}
             <View style={styles.chatInfo}>
                 <Text style={styles.chatName}>{matchedUser.firstName} {matchedUser.lastName}</Text>
-                <Text style={styles.chatLastMessage}>{item.message}</Text>
+                <Text style={styles.chatLastMessage}>{matchedUser.message}</Text>
             </View>
         </TouchableOpacity>
     );
-
-    return (
-        <FlatList
+    
+    return matchedUsers.length > 0 ? <FlatList
             data={matchedUsers}
             keyExtractor={matchedUser => matchedUser.matchId.toString()}
             renderItem={renderChatItem}
             style={styles.chatList}
         />
-    );
+    
+    : <Text>No chats yet</Text>
 };
 
 const styles = StyleSheet.create({

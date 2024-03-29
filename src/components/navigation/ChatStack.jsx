@@ -11,7 +11,7 @@ export default function NewsFeedStack() {
 
   return <>
     <chatStack.Navigator>
-        <chatStack.Screen name="Chats" component={ChatListScreen} options={{headerShown: true}}/>
+        <chatStack.Screen name="Chat" component={ChatListScreen} options={{headerShown: true}}/>
         <chatStack.Screen name="Chat Room" component={ChatRoomScreen} options={{headerShown: true, headerBackTitleVisible: true}}/>
       </chatStack.Navigator>
     </>;
