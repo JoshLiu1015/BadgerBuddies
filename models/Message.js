@@ -2,14 +2,13 @@ const db = require("../config/db");
 
 
 class Message {
-    constructor(senderId, receiverId, chatroomId, message) {{
+    constructor(senderId, receiverId, message) {{
 
         
 
 
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.chatroomId = chatroomId;
         this.message = message;
 
 
@@ -19,10 +18,10 @@ class Message {
     save() {
 
         let sql = `
-        INSERT INTO messages (sender_id, receiver_id, chat_room_id, message_text)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO messages (senderId, receiverId, message)
+        VALUES (?, ?, ?)
         `;
-        return db.execute(sql, [this.senderId, this.receiverId, this.chatroomId, this.message]);
+        return db.execute(sql, [this.senderId, this.receiverId, this.message]);
 
     }
 
@@ -45,4 +44,4 @@ class Message {
     }
 }
 
-module.exports = User;
+module.exports = Message;

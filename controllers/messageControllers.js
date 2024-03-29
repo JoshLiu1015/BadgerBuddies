@@ -2,9 +2,9 @@ const Message = require("../models/Message");
 
 const createNewMessage = async (req, res, next) => {
     try {
-        const {senderId, receiverrId, chatroomId, message} = req.body;
+        const {senderId, receiverrId, message} = req.body;
         
-        const newMessage = new Message(senderId, receiverrId, chatroomId, message);
+        const newMessage = new Message(senderId, receiverrId, message);
 
         // Save the new instance into database
         let [info, _] = await newMessage.save();
@@ -19,7 +19,7 @@ const createNewMessage = async (req, res, next) => {
 
 
 
-const getMessageByUsersId = async (req, res, next) => {
+const getMessagesByUsersId = async (req, res, next) => {
     try{
         const senderId = req.params.senderId;
         const receiverId = req.params.receiverId;
@@ -58,6 +58,6 @@ const deleteMessages = async (req, res, next) => {
 
 module.exports = {
     createNewMessage,
-    getMessageByUsersId,
+    getMessagesByUsersId,
     deleteMessages
 }

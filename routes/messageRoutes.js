@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const messageController = require("../controllers/messageControllers");
+const authControllers = require("../controllers/authControllers");
 
 
 router
@@ -11,8 +12,8 @@ router
 
 router
     .route("/id/:senderId/:receiverId")
-    .get(messageController.MessageByUsersId)
-    .delete(userControllers.deleteMessageByUsersId);
+    .get(authControllers.authenticateToken, messageController.getMessagesByUsersId)
+    .delete(authControllers.authenticateToken, messageController.deleteMessages);
 
 
 
