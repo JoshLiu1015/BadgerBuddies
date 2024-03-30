@@ -36,11 +36,11 @@ const onlineUsers = new Map(); // A map to hold the associations
 io.on('connection', (socket) => {
     const userId = socket.handshake.query.userId; // Retrieve userId from the handshake query
     onlineUsers.set(userId, socket.id); // Associate userId with socket.id
-    console.log('User connected:', userId);
+    // console.log('User connected:', userId);
 
     socket.on('disconnect', () => {
         onlineUsers.delete(userId); // Remove the association when the user disconnects
-        console.log('User disconnected:', userId);
+        // console.log('User disconnected:', userId);
     });
 
     socket.on('sendMessage', async (data) => {

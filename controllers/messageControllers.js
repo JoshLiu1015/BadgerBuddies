@@ -40,8 +40,9 @@ const deleteMessages = async (req, res, next) => {
     try {
         const senderId = req.params.senderId;
         const receiverId = req.params.receiverId;
+        // console.log(senderId, receiverId);
 
-        const [info, _] = await Match.delete(senderId, receiverId);
+        const [info, _] = await Message.delete(senderId, receiverId);
 
         // make sure a rows has been deleted, return 404 otherwise
         if (info.affectedRows === 0) {

@@ -124,6 +124,21 @@ class Match {
         return db.execute(sql, [id]);
     }
 
+    static findMatchedUserAndLastMessageByRequesterId(id) {
+        let sql = `SELECT ma.id AS matchId, u.id AS userId, me.id AS messageId, ma.*, u.*, me.*
+            FROM Matches ma, Users u, Messages me
+            WHERE ma.targetId = u.id
+            AND ma.requesterId = ?
+            AND NOT (ma.isMatchAccepted = 1
+                OR ma.isMatchDeclined = 1)
+            AND me.senderId = ma.requesterId
+            AND me.receiverId = ma.targetId
+            ORDER BY me.createTime DESC
+            LIMIT 1`;
+
+        return db.execute(sql, [id]);
+    }
+
     static findByTargetId(id) {
         let sql = `SELECT * FROM Matches WHERE targetId = ?`;
 

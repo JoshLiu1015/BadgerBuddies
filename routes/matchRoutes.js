@@ -17,6 +17,11 @@ router
 router
     .route("/requesterId/:id")
     .get(authControllers.authenticateToken, matchControllers.getMatchByRequesterId);
+    
+
+router
+.route("/messages/requesterId/:id")
+.get(authControllers.authenticateToken, matchControllers.getMatchedUserAndLastMessageByRequesterId);
 
 router
     .route("/targetId/:id")
