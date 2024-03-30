@@ -28,8 +28,8 @@ function BadgerBuddies(props) {
     const handleLogin = async (email, password) => {
         try {
             
-            // const res = await fetch("http://10.140.172.174:3000/user/login", {
-            const res = await fetch("http://192.168.1.168:3000/user/login", {
+            const res = await fetch("http://192.168.2.91:3000/user/login", {
+            //const res = await fetch("http://192.168.1.168:3000/user/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -82,8 +82,8 @@ function BadgerBuddies(props) {
     // signup function that is called in BadgerRegisterScreen
     const handleSignup = async (email, password, firstName, lastName, gender, major, year, weight, height, pictures, aboutMe) => {
         try {
-            // const res = await fetch("http://10.140.172.174:3000/user", {
-            const res = await fetch("http://192.168.1.168:3000/user", {
+            const res = await fetch("http://192.168.2.91:3000/user", {
+            //const res = await fetch("http://192.168.1.168:3000/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

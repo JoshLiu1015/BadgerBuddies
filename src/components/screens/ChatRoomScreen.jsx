@@ -1,39 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
 import io from 'socket.io-client';
+import BadgerBuddiesContext from '../../../contexts/BadgerBuddiesContext';
+import * as SecureStore from 'expo-secure-store';
 
 
 const ChatRoomScreen = (props) => {
     // Initialize socket connection
     // It triggers io.on('connection', (socket) => { ... }) on the backend/server
     // which enables every user
-    const socket = io('http://192.168.1.168:3000', {
+    const socket = io('http://192.168.2.91:3000', {
+    //const socket = io('http://192.168.1.168:3000', {
         query: {
             // senderId as a key to store the socket id in the backend
             userId: props.route.params.requesterId
         }
     });
 
+    const [setIsLoggedIn, userId, secureStoreEmail] = useContext(BadgerBuddiesContext);
+
 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
 
-    // useEffect(() => {
-    //     // Fetch the existing messages from the backend
-    //     fetch(`http://your_server_url/messages/${chatRoomId}`)
-    //         .then(response => response.json())
-    //         .then(data => setMessages(data.messages))
-    //         .catch(error => console.error(error));
+    const senderId = props.route.params.requesterId;
+    const receiverId = props.route.params.targetId;
 
-    //     // Listen for new messages
-    //     socket.on('newMessage', (newMessage) => {
-    //         setMessages(currentMessages => [...currentMessages, newMessage]);
-    //     });
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const token = await SecureStore.getItemAsync(secureStoreEmail);
 
-    //     return () => {
-    //         socket.off('newMessage');
-    //     };
-    // }, [chatRoomId]);
+                // Fetch the existing messages from the backend
+                const res = await fetch(`http://192.168.2.91:3000/message/id/${senderId}/${receiverId}`, {
+                //const res = await fetch(`http://192.168.1.168:3000/message/id/${userId}/${receiverId}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
+                
+                if (res.status == 200) {
+                    alert("Successfully fetched messages");
+                
+                    const json = await res.json();
+                    
+                    // if messages are found
+                    if (json && json.Messages) {
+                        alert(JSON.stringify(json.Messages))
+                        setMessages(json.Messages);
+                        
+
+                    }
+
+                    // Listen for new messages
+                    socket.on('receiveMessage', (newMessage) => {
+                        setMessages(currentMessages => [...currentMessages, newMessage]);
+                    });
+
+                    return () => {
+                        socket.off('receiveMessage');
+                    };
+
+                } else {
+                    alert("Failed to fetch messages");
+                }
+
+                
+            } catch (error) {
+                console.error("Error during fetching: ", error);
+            }
+        }
+
+        fetchMessages();
+
+    }, []);
+
+    
 
     const sendMessage = () => {
         // don't send empty messages
@@ -42,19 +85,20 @@ const ChatRoomScreen = (props) => {
         }
         else{
             const newMessage = {
-                senderId: props.route.params.requesterId,
-                receiverId: props.route.params.targetId,
+                senderId: senderId,
+                receiverId: receiverId,
                 message: message,
                 // Include other data as needed, like senderId
             };
             socket.emit('sendMessage', newMessage);
             setMessage('');
+            setMessages(currentMessages => [...currentMessages, newMessage]);
         }
     };
 
 
     const renderMessageItem = ({ item }) => {
-        const isSender = item.senderId === currentUser;
+        const isSender = item.senderId === senderId;
 
         return (
             <View style={[styles.messageRow, isSender ? styles.sender : styles.receiver]}>
@@ -63,7 +107,7 @@ const ChatRoomScreen = (props) => {
         );
     };
 
-    
+
     return (
         <View style={styles.container}>
             <FlatList

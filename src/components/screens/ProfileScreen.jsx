@@ -92,14 +92,14 @@ const ProfileScreen = (props) => {
     const [isUpdated, setIsUpdated] = useState(false);
 
 
-
-    const socket = io('http://192.168.1.168:3000', {
+    const socket = io('http://192.168.2.91:3000', {
+    // const socket = io('http://192.168.1.168:3000', {
         query: {
             // senderId as a key to store the socket id in the backend
             userId: userId
         }
     });
-    
+
 
     const heightOptionsFeetInches = [];
     for (let feet = 4; feet <= 7; feet++) {
@@ -154,7 +154,8 @@ const ProfileScreen = (props) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`);
+                const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`);
+                //const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`);
 
                 if (res.status == 200) {
                     // alert("Successfully fetched the user");
@@ -230,8 +231,9 @@ const ProfileScreen = (props) => {
         try {
             alert("preferenceid: " + preferenceId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
-
-            const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceId}`, {
+            
+            const res = await fetch(`http://192.168.2.91:3000/preference/preferenceId/${preferenceId}`, {
+            //const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceId}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -298,8 +300,9 @@ const ProfileScreen = (props) => {
             
             // alert(userId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
-            // const res = await fetch(`http://10.140.172.174:3000/user/id/${userId}`, {
-            const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
+            
+            const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`, {
+            //const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`,
