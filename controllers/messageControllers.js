@@ -25,7 +25,7 @@ const getMessagesByUsersId = async (req, res, next) => {
         const receiverId = req.params.receiverId;
 
         
-        const [[messages], _] = await Message.findByUserIds(senderId, receiverId);
+        const [messages, _] = await Message.findByUserIds(senderId, receiverId);
 
         res.status(200).json({Messages: messages});
     } catch(error) {

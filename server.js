@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
             const receiverSocketId = onlineUsers.get(data.receiverId);
             
             if (receiverSocketId) {
-                io.to(receiverSocketId).emit('newMessageNotification', {
+                io.to(receiverSocketId).emit('receiveMessage', {
                     from: data.senderId,
                     message: data.message
                 });
