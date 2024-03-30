@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, FlatList, Text } from 'react-native';
+import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
 import io from 'socket.io-client';
 
 
@@ -52,16 +52,66 @@ const ChatRoomScreen = (props) => {
         }
     };
 
+
+    const renderMessageItem = ({ item }) => {
+        const isSender = item.senderId === currentUser;
+
+        return (
+            <View style={[styles.messageRow, isSender ? styles.sender : styles.receiver]}>
+                <Text style={styles.messageText}>{item.message}</Text>
+            </View>
+        );
+    };
+
+    
     return (
-        <View>
+        <View style={styles.container}>
+            <FlatList
+                data={messages}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderMessageItem}
+                inverted
+            />
             <TextInput
                 value={message}
                 onChangeText={setMessage}
                 placeholder="Type a message"
+                style={styles.input}
             />
             <Button title="Send" onPress={sendMessage} disabled={message === ''}/>
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: 'gray',
+        padding: 10,
+        margin: 10,
+    },
+    messageRow: {
+        flexDirection: 'row',
+        margin: 4,
+        padding: 8,
+        borderRadius: 12,
+        maxWidth: '70%',
+    },
+    sender: {
+        backgroundColor: '#DCF8C6',
+        alignSelf: 'flex-end',
+    },
+    receiver: {
+        backgroundColor: '#FFFFFF',
+        alignSelf: 'flex-start',
+    },
+    messageText: {
+        fontSize: 16,
+    },
+});
+
 
 export default ChatRoomScreen;

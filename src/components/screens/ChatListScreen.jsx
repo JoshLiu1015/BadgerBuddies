@@ -47,7 +47,7 @@ const ChatListScreen = ({ onChatSelected }) => {
                     
                     // if at least one matche is found
                     if (json && json.Match[0]) {
-                        // alert(JSON.stringify(json.Match))
+                        alert(JSON.stringify(json.Match))
                         // alert(json.Match[0].pictures[0])
                         setMatchedUsers(json.Match);
 
@@ -120,9 +120,14 @@ const ChatListScreen = ({ onChatSelected }) => {
                 {/* <Image source={{ uri: item.photo }} style={styles.chatPhoto} />  */}
                 <View style={styles.chatInfo}>
                     <Text style={styles.chatName}>{matchedUser.firstName} {matchedUser.lastName}</Text>
+                    
+                </View>
+
+                <View style={{justifyContent: 'center', marginLeft: 50}}>
                     <Text style={styles.chatLastMessage}>{matchedUser.message}</Text>
                 </View>
-                <View style={{justifyContent: 'center', marginLeft: 50, marginBottom: 10}}>
+                
+                <View style={{justifyContent: 'center', marginLeft: 50}}>
                     <Button title="Delete" onPress={() => onDeletePress(matchedUser.receiverId)} color="gray" />
                 </View>
                 
