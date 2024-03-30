@@ -125,6 +125,7 @@ class Match {
     }
 
     static findMatchedUserAndLastMessageByRequesterId(id) {
+        /*
         let sql = `SELECT ma.id AS matchId, u.id AS userId, me.id AS messageId, ma.*, u.*, me.*
             FROM Matches ma, Users u, Messages me
             WHERE ma.targetId = u.id
@@ -135,6 +136,19 @@ class Match {
             AND me.receiverId = ma.targetId
             ORDER BY me.createTime DESC
             LIMIT 1`;
+        */
+
+        let sql = `SELECT ma.id AS matchId, u.id AS userId, me.id AS messageId, ma.*, u.*, me.*
+        FROM Matches ma
+        JOIN Users u ON ma.targetId = u.id
+        LEFT JOIN (
+            SELECT senderId, receiverId, MAX(createTime) AS latestMessageTime
+            FROM Messages
+            GROUP BY senderId, receiverId
+        ) latestMessages ON latestMessages.senderId = ma.requesterId AND latestMessages.receiverId = ma.targetId
+        LEFT JOIN Messages me ON me.senderId = latestMessages.senderId AND me.receiverId = latestMessages.receiverId AND me.createTime = latestMessages.latestMessageTime
+        WHERE ma.requesterId = ?
+        AND ma.isMatchAccepted = 1`;
 
         return db.execute(sql, [id]);
     }
