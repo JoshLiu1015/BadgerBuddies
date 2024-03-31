@@ -9,8 +9,8 @@ const ChatRoomScreen = (props) => {
     // Initialize socket connection
     // It triggers io.on('connection', (socket) => { ... }) on the backend/server
     // which enables every user
-    const socket = io('http://192.168.2.91:3000', {
-    //const socket = io('http://192.168.1.168:3000', {
+    // const socket = io('http://192.168.2.91:3000', {
+    const socket = io('http://192.168.1.168:3000', {
         query: {
             // senderId as a key to store the socket id in the backend
             userId: props.route.params.requesterId
@@ -32,8 +32,8 @@ const ChatRoomScreen = (props) => {
                 const token = await SecureStore.getItemAsync(secureStoreEmail);
 
                 // Fetch the existing messages from the backend
-                const res = await fetch(`http://192.168.2.91:3000/message/id/${senderId}/${receiverId}`, {
-                //const res = await fetch(`http://192.168.1.168:3000/message/id/${userId}/${receiverId}`, {
+                // const res = await fetch(`http://192.168.2.91:3000/message/id/${senderId}/${receiverId}`, {
+                const res = await fetch(`http://192.168.1.168:3000/message/id/${userId}/${receiverId}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -41,13 +41,13 @@ const ChatRoomScreen = (props) => {
                 });
                 
                 if (res.status == 200) {
-                    alert("Successfully fetched messages");
+                    // alert("Successfully fetched messages");
                 
                     const json = await res.json();
                     
                     // if messages are found
                     if (json && json.Messages) {
-                        alert(JSON.stringify(json.Messages))
+                        // alert(JSON.stringify(json.Messages))
                         setMessages(json.Messages);
                         
 
@@ -114,15 +114,18 @@ const ChatRoomScreen = (props) => {
                 data={messages}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderMessageItem}
-                inverted
             />
-            <TextInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Type a message"
-                style={styles.input}
-            />
-            <Button title="Send" onPress={sendMessage} disabled={message === ''}/>
+            <View style={{flexDirection: 'row'}}>
+                <TextInput
+                    value={message}
+                    onChangeText={setMessage}
+                    placeholder="Type a message"
+                    style={styles.input}
+                />
+                <View style={{justifyContent: 'center', alignContent: 'flex-end'}}>
+                    <Button title="Send" onPress={sendMessage} disabled={message === ''}/>
+                </View>
+            </View>
         </View>
     );
 };
@@ -135,6 +138,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         padding: 10,
+        paddingRight: 170,
         margin: 10,
     },
     messageRow: {

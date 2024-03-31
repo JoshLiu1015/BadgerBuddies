@@ -33,8 +33,8 @@ const ChatListScreen = ({ onChatSelected }) => {
             try {
                 const token = await SecureStore.getItemAsync(secureStoreEmail);
                 
-                const res = await fetch(`http://192.168.2.91:3000/match/messages/requesterId/${userId}`, {
-                //const res = await fetch(`http://192.168.1.168:3000/match/messages/requesterId/${userId}`, {
+                // const res = await fetch(`http://192.168.2.91:3000/match/messages/requesterId/${userId}`, {
+                const res = await fetch(`http://192.168.1.168:3000/match/messages/requesterId/${userId}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -86,8 +86,8 @@ const ChatListScreen = ({ onChatSelected }) => {
             const token = await SecureStore.getItemAsync(secureStoreEmail);
             alert("senderId: " + userId + " receiverId: " + receiverId);
 
-            const res = await fetch(`http://192.168.2.91:3000/message/id/${userId}/${receiverId}`, {
-            //const res = await fetch(`http://192.168.1.168:3000/message/id/${userId}/${receiverId}`, {
+            // const res = await fetch(`http://192.168.2.91:3000/message/id/${userId}/${receiverId}`, {
+            const res = await fetch(`http://192.168.1.168:3000/message/id/${userId}/${receiverId}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`,

@@ -77,8 +77,8 @@ function MatchInfoScreen(props) {
             // alert(secureStoreEmail);
             // const token = await SecureStore.getItemAsync(secureStoreEmail);
             
-            const res = await fetch(`http://192.168.2.91:3000/preference`, {
-            //const res = await fetch(`http://192.168.1.168:3000/preference`, {
+            // const res = await fetch(`http://192.168.2.91:3000/preference`, {
+            const res = await fetch(`http://192.168.1.168:3000/preference`, {
                 method: "POST",
                 headers: {
                     // "Authorization": `Bearer ${token}`,

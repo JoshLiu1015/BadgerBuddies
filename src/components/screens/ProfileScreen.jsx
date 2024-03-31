@@ -6,18 +6,57 @@ import RNPickerSelect from 'react-native-picker-select';
 import * as ImagePicker from 'expo-image-picker';
 import CarouselScreen from './CarouselScreen';
 import io from 'socket.io-client';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconWeight from 'react-native-vector-icons/FontAwesome5';
+
+
+
+const ProfileSection = ({ title, children }) => (
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {children}
+    </View>
+  );
+  
+  const UserInfoGraphRow = ({value, icon }) => (
+    <View style={styles.infoGraphRowContainer}>
+      <View style={styles.graphIconContainer}>
+        {icon}
+      </View>
+      <View>
+        <Text style={{marginLeft: 10}}>{value}</Text>
+      </View>
+    </View>
+  );
+
+
 
 
 
 
 const ProfileScreen = (props) => {
     
-    const UserInfoRow = ({ label, value }) => (
-        <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{label}: {value}</Text>
-        </View>
-    );
+    // const UserInfoRow = ({ label, value }) => (
+    //     <View style={styles.infoRow}>
+    //         <Text style={styles.infoLabel}>{label}: {value}</Text>
+    //     </View>
+    // );
 
+    // const UserInfoRow = ({ label, value }) => (
+    //     <View style={styles.infoRowContainer}>
+    //         <Text style={styles.infoLabel}>{label}</Text>
+    //         <Text style={styles.infoValue}>{value}</Text>
+    //     </View>
+    // );
+
+    const GenderIcon = () => <Icon name="person" size={20} color="#333" />;
+    const MajorIcon = () => <Icon name="science" size={20} color="#333" />;
+    const AgeIcon = () => <Icon name="school" size={20} color="#333" />;
+    const WeightIcon = () => <IconWeight name="weight" size={20} color="#333" />;
+    const HeightIcon = () => <Icon name="straighten" size={20} color="#333" />;
+
+
+    
 
     const [editPictures, setEditPictures] = useState(Array(6).fill(null));
 
@@ -92,8 +131,8 @@ const ProfileScreen = (props) => {
     const [isUpdated, setIsUpdated] = useState(false);
 
 
-    const socket = io('http://192.168.2.91:3000', {
-    // const socket = io('http://192.168.1.168:3000', {
+    // const socket = io('http://192.168.2.91:3000', {
+    const socket = io('http://192.168.1.168:3000', {
         query: {
             // senderId as a key to store the socket id in the backend
             userId: userId
@@ -154,8 +193,8 @@ const ProfileScreen = (props) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`);
-                //const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`);
+                // const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`);
+                const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`);
 
                 if (res.status == 200) {
                     // alert("Successfully fetched the user");
@@ -232,8 +271,8 @@ const ProfileScreen = (props) => {
             alert("preferenceid: " + preferenceId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
             
-            const res = await fetch(`http://192.168.2.91:3000/preference/preferenceId/${preferenceId}`, {
-            //const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceId}`, {
+            // const res = await fetch(`http://192.168.2.91:3000/preference/preferenceId/${preferenceId}`, {
+            const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceId}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -301,8 +340,8 @@ const ProfileScreen = (props) => {
             // alert(userId);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
             
-            const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`, {
-            //const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
+            // const res = await fetch(`http://192.168.2.91:3000/user/id/${userId}`, {
+            const res = await fetch(`http://192.168.1.168:3000/user/id/${userId}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -395,7 +434,7 @@ const ProfileScreen = (props) => {
         
 
     // render the screen
-    return <View style={styles.container}>
+    return editFirstName !== "" ? <View style={styles.container}>
         <View style={[styles.overlay, {paddingTop: 50}]}>
             {/* <TouchableOpacity onPress={selectPhotoTapped}>
                 <Image source={{uri: userPhoto}} style={styles.photo} />
@@ -423,12 +462,22 @@ const ProfileScreen = (props) => {
 
         <ScrollView>
             <View style={styles.overlay}>
-                <UserInfoRow label="About Me" value={userInfo.aboutMe} />
+                <ProfileSection title="About Me">
+                    <Text style={styles.aboutMeText}>{userInfo.aboutMe}</Text>
+                </ProfileSection>
+                {/* <UserInfoRow label="About Me" value={userInfo.aboutMe} />
                 <UserInfoRow label="Gender" value={userInfo.gender} />
                 <UserInfoRow label="Major" value={userInfo.major} />
                 <UserInfoRow label="Year" value={userInfo.year} />
                 <UserInfoRow label="Weight" value={weightMetric === "lb" ? String(userInfo.weight) + " lb" : String(editWeightKg) + " kg"} />
-                <UserInfoRow label="Height" value={heightMetric === "ft/in" ? inchesToFeetInches(userInfo.height) : String(editHeightCm) + " cm"} />
+                <UserInfoRow label="Height" value={heightMetric === "ft/in" ? inchesToFeetInches(userInfo.height) : String(editHeightCm) + " cm"} /> */}
+                <ProfileSection title="Info">
+                    <UserInfoGraphRow value={userInfo.gender} icon={<GenderIcon />} />
+                    <UserInfoGraphRow value={userInfo.major} icon={<MajorIcon />} />
+                    <UserInfoGraphRow value={userInfo.year} icon={<AgeIcon />} />
+                    <UserInfoGraphRow value={weightMetric === "lb" ? String(userInfo.weight) + " lb" : String(editWeightKg) + " kg"} icon={<WeightIcon />} />
+                    <UserInfoGraphRow value={heightMetric === "ft/in" ? inchesToFeetInches(userInfo.height) : String(editHeightCm) + " cm"} icon={<HeightIcon />} />
+                </ProfileSection>
                 
 
                 <View style={{ flexDirection: "row", marginBottom: 15 }}>
@@ -604,12 +653,39 @@ const ProfileScreen = (props) => {
             </Modal>
         </View>
         
+    </View> : <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <Text>Loading...</Text>
     </View>
 
 
 };
 
 const styles = StyleSheet.create({
+    // infoRowContainer: {
+    //     flexDirection: 'row', // Align items in a row
+    //     justifyContent: 'space-between', // Separate label and value
+    //     backgroundColor: '#F7F7F7', // Light background for the row
+    //     padding: 15, // Inner padding
+    //     borderRadius: 8, // Rounded corners
+    //     marginVertical: 5, // Margin between rows
+    //     shadowColor: '#000', // Shadow color
+    //     shadowOffset: { width: 0, height: 2 }, // Shadow position
+    //     shadowOpacity: 0.1, // Shadow opacity
+    //     shadowRadius: 4, // Shadow blur radius
+    //     elevation: 2, // Elevation for Android
+    // },
+    // infoLabel: {
+    //     fontSize: 16,
+    //     color: '#333', // Dark color for text
+    //     fontWeight: 'bold', // Bold font weight for the label
+    //     flex: 1, // Take up 1/3 of the space
+    // },
+    // infoValue: {
+    //     fontSize: 16,
+    //     color: '#333', // Dark color for text
+    //     flex: 2, // Take up 2/3 of the space
+    //     textAlign: 'right', // Align value to the right
+    // },
     container: {
         flex: 1,
         // alignItems: 'center',
@@ -636,14 +712,14 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
     },
-    infoRow: {
-        marginTop: 20,
-        paddingVertical: 8,
-    },
-    infoLabel: {
-        fontSize: 20,
-        color: 'gray',
-    },
+    // infoRow: {
+    //     marginTop: 20,
+    //     paddingVertical: 8,
+    // },
+    // infoLabel: {
+    //     fontSize: 20,
+    //     color: 'gray',
+    // },
     editButton: {
         marginTop: 20,
         backgroundColor: 'blue',
@@ -678,6 +754,32 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 10
     },
+    sectionContainer: {
+        backgroundColor: '#F7F7F7',
+        borderRadius: 8,
+        padding: 15,
+        marginHorizontal: 10, // This margin applies to both sides, making the content centered and consistent
+        marginVertical: 10,
+        alignSelf: 'stretch',
+        flex: 1,
+      },
+      sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+      },
+      aboutMeText: {
+        fontSize: 16,
+      },
+      infoGraphRowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 5,
+      },
+      graphIconContainer: {
+        marginRight: 10,
+        // Add styles for your icon container if needed
+      },
   });
 
 const pickerSelectStyles = StyleSheet.create({

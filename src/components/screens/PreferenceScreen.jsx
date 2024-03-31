@@ -64,8 +64,8 @@ function PreferenceScreen(props) {
             try {
                 const token = await SecureStore.getItemAsync(secureStoreEmail);
 
-                const res = await fetch(`http://192.168.2.91:3000/preference/userId/${userId}`, {
-                //const res = await fetch(`http://192.168.1.168:3000/preference/userId/${userId}`, {
+                // const res = await fetch(`http://192.168.2.91:3000/preference/userId/${userId}`, {
+                const res = await fetch(`http://192.168.1.168:3000/preference/userId/${userId}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -146,8 +146,8 @@ function PreferenceScreen(props) {
             // alert(secureStoreEmail);
             const token = await SecureStore.getItemAsync(secureStoreEmail);
             
-            const res = await fetch(`http://192.168.2.91:3000/preference/preferenceId/${preferenceInfo.id}`, {
-            //const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceInfo.id}`, {
+            // const res = await fetch(`http://192.168.2.91:3000/preference/preferenceId/${preferenceInfo.id}`, {
+            const res = await fetch(`http://192.168.1.168:3000/preference/preferenceId/${preferenceInfo.id}`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`,

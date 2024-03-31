@@ -20,8 +20,8 @@ const MatchScreen = () => {
             try {
                 const token = await SecureStore.getItemAsync(secureStoreEmail);
                 
-                const res = await fetch(`http://192.168.2.91:3000/match/requesterId/${userId}`, {
-                //const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
+                // const res = await fetch(`http://192.168.2.91:3000/match/requesterId/${userId}`, {
+                const res = await fetch(`http://192.168.1.168:3000/match/requesterId/${userId}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -64,8 +64,8 @@ const MatchScreen = () => {
         const token = await SecureStore.getItemAsync(secureStoreEmail);
 
 
-        const res = await fetch(`http://192.168.2.91:3000/match/userId/${userId}`, {
-        //const res = await fetch(`http://192.168.1.168:3000/match/userId/${userId}`, {
+        // const res = await fetch(`http://192.168.2.91:3000/match/userId/${userId}`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/userId/${userId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -96,8 +96,8 @@ const MatchScreen = () => {
     try {
         const token = await SecureStore.getItemAsync(secureStoreEmail);
 
-        const res = await fetch(`http://192.168.2.91:3000/match/matchId/${matchId}`, {
-        //const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
+        // const res = await fetch(`http://192.168.2.91:3000/match/matchId/${matchId}`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
             method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -134,8 +134,8 @@ const MatchScreen = () => {
     try {
         const token = await SecureStore.getItemAsync(secureStoreEmail);
         
-        const res = await fetch(`http://192.168.2.91:3000/match/matchId/${matchId}`, {
-        //const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
+        // const res = await fetch(`http://192.168.2.91:3000/match/matchId/${matchId}`, {
+        const res = await fetch(`http://192.168.1.168:3000/match/matchId/${matchId}`, {
             method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${token}`,
