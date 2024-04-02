@@ -177,8 +177,8 @@ function PreferenceScreen(props) {
                         {preferenceTitles.map((title, index) => {
                             if (title === "Time") {
 
-                                return <View key={index} style={{ marginBottom: 20 }}>
-                                    <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                return <View key={index} style={{ marginBottom: 20, alignItems: 'flex-start' }}>
+                                    <Text style={{fontWeight: 'bold', marginBottom: 5}}>{title}</Text>
                                     <DateTimePicker
                                         testID="dateTimePicker"
                                         value={date}
@@ -197,7 +197,7 @@ function PreferenceScreen(props) {
                                 const [items, setItems] = useState(options[index]);
 
                                 return <View key={index} style={{ marginBottom: 20 }}>
-                                    <Text style={{fontWeight: 'bold', marginBottom: 10}}>{title}</Text>
+                                    <Text style={{fontWeight: 'bold', marginBottom: 5}}>{title}</Text>
                                     <RNPickerSelect
                                         onValueChange={(value) => setEditVals[index](value)}
                                         items={items}
@@ -213,7 +213,7 @@ function PreferenceScreen(props) {
                     </View>
                     
 
-                    <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
+                    {/* <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 80 }}>
                         <TouchableOpacity style={styles.editButton} onPress={() => {
                             let isEmpty = false;
 
@@ -244,7 +244,37 @@ function PreferenceScreen(props) {
 
                         }}>
                             <Text style={styles.editButtonText}>Save</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                    <View style={{ marginBottom: 15 }}>
+                        <Button title="Save" onPress={() => {
+                            let isEmpty = false;
+
+                            for (const [index, element] of editVals.entries()) {
+                                if (typeof element === 'object') {
+                                    time = handleTime();
+                                }
+                                else {
+                                    if (element === "") {
+
+                                        alert("Please select a value for " + preferenceTitles[index]);
+                                        isEmpty = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            
+                            if (!isEmpty) {
+                                try {
+                                    handleSave();
+                                } catch (error) {
+                                    console.error("Error during saving info: ", error);
+                                }
+
+                                
+                            }
+
+                        }} color="crimson" />
                     </View>
 
                     {/* <View style={{ borderWidth: 1, margin: 15,  marginHorizontal: 115 }}>
@@ -305,22 +335,18 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
       fontSize: 16,
-      paddingVertical: 12,
-      paddingHorizontal: 10,
+      padding: 10,
       borderWidth: 1,
       borderColor: 'gray',
       borderRadius: 4,
-      color: 'black',
       paddingRight: 30, // to ensure the text is never behind the icon
     },
     inputAndroid: {
       fontSize: 16,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
+      padding: 10,
       borderWidth: 0.5,
       borderColor: 'purple',
       borderRadius: 8,
-      color: 'black',
       paddingRight: 30, // to ensure the text is never behind the icon
     },
   });

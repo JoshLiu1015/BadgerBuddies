@@ -37,6 +37,7 @@ const MatchScreen = () => {
                         // alert(json.Match[0] === undefined);
                         // alert(JSON.stringify(json.Match[0]));
                         setMatchedUsers(json.Match);
+                        // alert(JSON.stringify(matchedUsers[0]));
                         // enable user cards if there are still matches in the Matches table 
                         // that have not been accecpted or rejected
                         setIsMatched(true);

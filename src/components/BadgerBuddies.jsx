@@ -21,6 +21,9 @@ function BadgerBuddies(props) {
 
     const [preferenceId, setPreferenceId] = useState("");
 
+    const [weightMetric, setWeightMetric] = useState("lb"); // default value
+    const [heightMetric, setHeightMetric] = useState("ft/in"); // default value
+
 
 
 
@@ -141,7 +144,8 @@ function BadgerBuddies(props) {
 
         // it should return the screen after logging in
         return <>
-            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId]}>
+            <BadgerBuddiesContext.Provider value={[setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId,
+                weightMetric, setWeightMetric, heightMetric, setHeightMetric]}>
                 <NavigationContainer>
                     <BadgerTabs/>
                 </NavigationContainer>

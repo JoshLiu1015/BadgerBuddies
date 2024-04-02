@@ -11,29 +11,6 @@ import IconWeight from 'react-native-vector-icons/FontAwesome5';
 
 
 
-const ProfileSection = ({ title, children }) => (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
-    </View>
-  );
-  
-  const UserInfoGraphRow = ({value, icon }) => (
-    <View style={styles.infoGraphRowContainer}>
-      <View style={styles.graphIconContainer}>
-        {icon}
-      </View>
-      <View>
-        <Text style={{marginLeft: 10}}>{value}</Text>
-      </View>
-    </View>
-  );
-
-
-
-
-
-
 const ProfileScreen = (props) => {
     
     // const UserInfoRow = ({ label, value }) => (
@@ -118,7 +95,8 @@ const ProfileScreen = (props) => {
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId] = useContext(BadgerBuddiesContext);
+    const [setIsLoggedIn, userId, secureStoreEmail, preferenceId, setPreferenceId,
+        weightMetric, setWeightMetric, heightMetric, setHeightMetric] = useContext(BadgerBuddiesContext);
 
     const editVals = [editAboutMe, editFirstName, editLastName, editGender, editMajor, editYear, editWeight, editHeight];
     const editSetVals = [setEditAboutMe, setEditFirstName, setEditLastName, setEditGender, setEditMajor, setEditYear, setEditWeight, setEditHeight];
@@ -160,12 +138,33 @@ const ProfileScreen = (props) => {
 
     
 
-    const [weightMetric, setWeightMetric] = useState("lb"); // default value
-    const [heightMetric, setHeightMetric] = useState("ft/in"); // default value
+    // const [weightMetric, setWeightMetric] = useState("lb"); // default value
+    // const [heightMetric, setHeightMetric] = useState("ft/in"); // default value
 
     // create a state variable to store the value of weight in kg and height in cm
     const [editWeightKg, setEditWeightKg] = useState(0);
     const [editHeightCm, setEditHeightCm] = useState(0);
+
+
+
+
+    const ProfileSection = ({ title, children }) => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            {children}
+        </View>
+    );
+      
+    const UserInfoGraphRow = ({value, icon }) => (
+        <View style={styles.infoGraphRowContainer}>
+            <View style={styles.graphIconContainer}>
+            {icon}
+            </View>
+            <View>
+            <Text style={{marginLeft: 10}}>{value}</Text>
+            </View>
+        </View>
+    );
 
 
     // const weightOptions = [
@@ -203,17 +202,17 @@ const ProfileScreen = (props) => {
                     // convert null values to empty strings or 0
                     // because null values can't be displayed in RNPickSelect
                     if (json && json.User) {
-                        if (json.User.aboutMe === null)
-                            json.User.aboutMe = "";
-                        if (json.User.major === "NULL")
-                            json.User.major = "";
+                        // if (json.User.aboutMe === null)
+                        //     json.User.aboutMe = "";
+                        // if (json.User.major === "NULL")
+                        //     json.User.major = "";
                         if (json.User.weight === null)
                             json.User.weight = 0;
 
                         if (json.User.height === null)
                             json.User.height = 0;
-                        if (json.User.pictures === null)
-                            json.User.pictures = Array(6).fill(null);
+                        // if (json.User.pictures === null)
+                        //     json.User.pictures = Array(6).fill(null);
                         // user info is an object
                         setUserInfo(json.User);
 
@@ -482,15 +481,17 @@ const ProfileScreen = (props) => {
 
                 <View style={{ flexDirection: "row", marginBottom: 15 }}>
                     <View style={{ justifyContent: "center" }}>
-                        <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
+                        {/* <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
                             <Text style={styles.editButtonText}>Edit</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        <Button title="Edit" onPress={() => setModalVisible(true)} color="crimson" />
                     </View>
 
                     <View style={{ marginLeft: 15 }}>
-                        <TouchableOpacity style={styles.editButton} onPress={handleLoggedOut}>
+                        {/* <TouchableOpacity style={styles.editButton} onPress={handleLoggedOut}>
                             <Text style={styles.editButtonText}>Logout</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        <Button title="Logout" onPress={handleLoggedOut} color="gray" />
                     </View>
                 </View>
             </View>
@@ -579,7 +580,7 @@ const ProfileScreen = (props) => {
                                         const items = options[index];
 
                                         return <View key={index} style={{ marginBottom: 20 }}>
-                                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[index]}</Text>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 5}}>{editTitles[index]}</Text>
                                             <RNPickerSelect
                                                 onValueChange={(value) => editSetVals[index](value)}
                                                 items={items}
@@ -596,7 +597,7 @@ const ProfileScreen = (props) => {
                                         const items = options[index];
 
                                         return <View key={index} style={{ marginBottom: 20 }}>
-                                            <Text style={{fontWeight: 'bold', marginBottom: 20}}>{editTitles[index]}</Text> 
+                                            <Text style={{fontWeight: 'bold', marginBottom: 5}}>{editTitles[index]}</Text> 
                                             <RNPickerSelect
                                                 // if it is for weight, check if weightMetric is "ib", if yes, call setEditWeigh, if not, call setEditWeightKg
                                                 // if it is for height, check if heightMetric is "ft/in", if yes, call setEditHeight, if not, call setEditHeightCm
@@ -615,8 +616,8 @@ const ProfileScreen = (props) => {
                                     }
 
                                     else if (editTitles[index] === "About Me") {
-                                        return <View key={index}>
-                                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[index]}</Text>
+                                        return <View key={index} style={{ marginVertical: 20 }}>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 5}}>{editTitles[index]}</Text>
                                             <TextInput
                                                 style={[styles.modalInput, {height: 100}]}
                                                 onChangeText={editSetVals[index]}
@@ -626,8 +627,8 @@ const ProfileScreen = (props) => {
                                         </View>
                                     }
                                     else {
-                                        return <View key={index}>
-                                            <Text style={{fontWeight: 'bold', marginBottom: 10}}>{editTitles[index]}</Text>
+                                        return <View key={index} style={{ marginBottom: 20 }}>
+                                            <Text style={{fontWeight: 'bold', marginBottom: 5}}>{editTitles[index]}</Text>
                                             <TextInput
                                                 style={styles.modalInput}
                                                 onChangeText={editSetVals[index]}
@@ -694,14 +695,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     overlay: {
-        flexGrow: 1,
+        // flexGrow: 1,
         justifyContent: 'center', // This centers content vertically in the screen
         alignItems: 'center', // This centers content horizontally in the screen
     },
-    content: {
-        width: '90%', // May adjust based on how wide you want the form
-        maxWidth: 600, // Ensures the form doesn't stretch too wide on large devices
-    },
+    // content: {
+    //     width: '90%', // May adjust based on how wide you want the form
+    //     maxWidth: 600, // Ensures the form doesn't stretch too wide on large devices
+    // },
     photo: {
         width: 120,
         height: 120,
@@ -751,8 +752,10 @@ const styles = StyleSheet.create({
     modalInput: {
         borderWidth: 1,
         height: 40,
-        marginBottom: 10,
-        padding: 10
+        padding: 10,
+        borderColor: 'gray',
+        borderRadius: 4,
+        paddingRight: 30, // to ensure the text is never behind the icon
     },
     sectionContainer: {
         backgroundColor: '#F7F7F7',
@@ -762,74 +765,70 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         alignSelf: 'stretch',
         flex: 1,
-      },
-      sectionTitle: {
+    },
+    sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
-      },
-      aboutMeText: {
+    },
+    aboutMeText: {
         fontSize: 16,
-      },
-      infoGraphRowContainer: {
+    },
+    infoGraphRowContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 5,
-      },
-      graphIconContainer: {
+    },
+    graphIconContainer: {
         marginRight: 10,
         // Add styles for your icon container if needed
-      },
+    },
   });
 
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
         fontSize: 16,
-        paddingVertical: 12,
-        paddingHorizontal: 10,
+        padding: 10,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 4,
-        color: 'black',
         paddingRight: 30, // to ensure the text is never behind the icon
     },
     inputAndroid: {
         fontSize: 16,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
+        padding: 10,
         borderWidth: 0.5,
         borderColor: 'purple',
         borderRadius: 8,
-        color: 'black',
         paddingRight: 30, // to ensure the text is never behind the icon
     },
 });
 
 
-const pickerSelectStylesMetrics = StyleSheet.create({
-    inputIOS: {
-        fontSize: 16,
-        paddingVertical: 5,
-        paddingHorizontal: 5,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 4,
-        color: 'white',
-        backgroundColor: "red",
-        backgroundColor: "blue"
+// const pickerSelectStylesMetrics = StyleSheet.create({
+//     inputIOS: {
+//         fontSize: 16,
+//         paddingVertical: 5,
+//         paddingHorizontal: 5,
+//         borderWidth: 1,
+//         borderColor: 'gray',
+//         borderRadius: 4,
+//         color: 'white',
+//         backgroundColor: "red",
+//         backgroundColor: "blue"
         
-    },
-    inputAndroid: {
-        fontSize: 16,
-        paddingHorizontal: 5,
-        paddingVertical: 5,
-        borderWidth: 0.5,
-        borderColor: 'purple',
-        borderRadius: 8,
-        color: 'white',
-        backgroundColor: "blue"
-    },
-});
+//     },
+//     inputAndroid: {
+//         fontSize: 16,
+//         paddingHorizontal: 5,
+//         paddingVertical: 5,
+//         borderWidth: 0.5,
+//         borderColor: 'purple',
+//         borderRadius: 8,
+//         color: 'white',
+//         backgroundColor: "blue"
+//     },
+// });
 
 
 export default ProfileScreen;
